@@ -11,4 +11,7 @@ router.post('/login', authController.login);
 // Get user profile route (protected)
 router.get('/profile', auth, authController.getProfile);
 
+// Preferences route
+router.put('/preferences', auth, authController.updatePreferences);
+
 module.exports = router;

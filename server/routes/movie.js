@@ -8,6 +8,8 @@ console.log('TMDB Service:', tmdbService); // Temporary debug log
 //TMDB routes
 router.get('/popular', tmdbService.getPopularMovies);
 router.get('/search', tmdbService.searchMovies);
+router.get('/:id/details', tmdbService.getMovieDetails);
+
 
 // Get all movies
 router.get('/', movieController.getAllMovies);

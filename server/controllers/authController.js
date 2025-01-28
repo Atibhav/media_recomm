@@ -22,7 +22,8 @@ const authController = {
             const newUser = new User({
                 username,
                 email,
-                password: hashedPassword
+                password: hashedPassword,
+                preferences: { genres: [] } // Initialize empty preferences
             });
 
             // Save user to database
@@ -40,7 +41,8 @@ const authController = {
                 user: {
                     id: savedUser._id,
                     username: savedUser.username,
-                    email: savedUser.email
+                    email: savedUser.email,
+                    preferences: savedUser.preferences
                 }
             });
         } catch (error) {
@@ -77,7 +79,8 @@ const authController = {
                 user: {
                     id: user._id,
                     username: user.username,
-                    email: user.email
+                    email: user.email,
+                    preferences: user.preferences
                 }
             });
         } catch (error) {
@@ -89,7 +92,54 @@ const authController = {
     getProfile: async (req, res) => {
         try {
             const user = await User.findById(req.user.id).select('-password');
-            res.json(user);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            res.json({
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                preferences: user.preferences
+            });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+
+    // Update preferences
+    updatePreferences: async (req, res) => {
+        try {
+            const { genres } = req.body;
+            
+            // Validate genres
+            if (!Array.isArray(genres)) {
+                return res.status(400).json({ message: 'Genres must be an array' });
+            }
+
+            // Update user preferences
+            const user = await User.findByIdAndUpdate(
+                req.user.id,
+                { 
+                    $set: { 
+                        preferences: { genres }
+                    }
+                },
+                { new: true }
+            ).select('-password');
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            res.json({
+                message: 'Preferences updated successfully',
+                user: {
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    preferences: user.preferences
+                }
+            });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
