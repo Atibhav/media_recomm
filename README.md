@@ -1,2 +1,132 @@
-# media_recomm
-recommendation website for tv shows/movies/games/music
+# Movie Recommendation App
+
+Last Updated: January 29 - 12pm, 2024
+
+## Overview
+A movie recommendation application with user authentication, personalized watchlists, and movie discovery features.
+
+## Tech Stack
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JWT
+- **External API**: TMDB (The Movie Database)
+- **Development Tools**: Postman, Git
+
+## Features Implemented
+
+### Authentication
+- User registration with email/password
+- Secure login with JWT
+- Protected routes for authenticated users
+- User profile management
+
+### Movie Operations
+- Fetch popular movies
+- Search movies by title
+- Detailed movie information
+- Integration with TMDB API
+
+### Watchlist Management
+- Add movies to personal watchlist
+- Remove movies from watchlist
+- View user's watchlist
+- Persistent storage in MongoDB
+
+## API Endpoints
+
+### Authentication Routes
+POST /api/auth/register
+- Register new user with username, email, password
+- Returns JWT token and user info
+
+POST /api/auth/login
+- Login with email and password
+- Returns JWT token and user info
+
+GET /api/auth/profile
+- Get user profile with preferences
+- Requires authentication
+
+### Movie Operations
+GET /api/movies/popular
+- Fetch popular movies from TMDB
+- Public access
+
+GET /api/movies/search?query=moviename
+- Search movies by title
+- Public access
+
+GET /api/movies/:id/details
+- Get detailed movie information
+- Combines TMDB data with local database
+
+### Watchlist Management
+POST /api/movies/:id/watchlist
+- Add movie to user's watchlist
+- Requires authentication
+
+DELETE /api/movies/:id/watchlist
+- Remove movie from watchlist
+- Requires authentication
+
+GET /api/movies/user/watchlist
+- View user's watchlist
+- Requires authentication
+
+## Dataabse Models
+
+### User Model
+- username
+- email
+- password (hashed)
+- preferences
+  - genres
+  - watchlist
+
+### Movie Model
+- tmdbId
+- title
+- overview
+- genres
+- releaseDate
+- posterPath
+- backdropPath
+- voteAverage
+- voteCount
+- type (movie/tv)
+- ratings
+- watchedBy
+
+## Features To Implement
+
+### Rating System
+POST /api/movies/:id/rate
+GET /api/movies/user/ratings
+
+### Recommendation Engine
+GET /api/movies/recommendations
+- Based on user preferences
+- Based on watch history
+- Based on ratings
+
+### Enhanced Movie Features
+GET /api/movies/trending
+GET /api/movies/upcoming
+GET /api/movies/similar/:id
+
+### User Preferences
+Genre preferences management
+Language preferences
+Content filters
+
+### Frontend Integration
+User interface design
+API integration
+State management
+
+## Next Steps
+Implement rating system
+Build recommendation algorithm
+Add more movie endpoints
+Document API for v0 integration
+Set up frontend collaboration

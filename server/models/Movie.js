@@ -16,6 +16,9 @@ const movieSchema = new mongoose.Schema({
     }],
     releaseDate: Date,
     posterPath: String,
+    backdropPath: String,        
+    voteAverage: Number,         
+    voteCount: Number,           
     type: {
         type: String,
         enum: ['movie', 'tv'],
@@ -35,6 +38,10 @@ const movieSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         }
+    }],
+    watchedBy: [{                
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }]
 }, {
     timestamps: true
