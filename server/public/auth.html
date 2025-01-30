@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Test</title>
+</head>
+<body>
+    <h1>OAuth Test</h1>
+    <button onclick="startAuth()">Start Google Auth</button>
+
+    <script>
+        function startAuth() {
+            const clientId = '448561765111-a577cbig2r64jsi5mg3ltdui1oiv5s08.apps.googleusercontent.com';
+            const redirectUri = 'https://559f-115-244-45-193.ngrok-free.app/api/auth/google/callback';
+            const scope = 'profile email';
+            
+            const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `response_type=code&` +
+                `scope=${encodeURIComponent(scope)}`;
+            
+            window.location.href = authUrl;
+        }
+    </script>
+</body>
+</html>

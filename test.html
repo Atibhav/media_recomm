@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Auth Test</title>
+</head>
+<body>
+    <h1>Google Auth Test</h1>
+    <p>Click the button to start authentication:</p>
+    <button onclick="startAuth()">Login with Google</button>
+
+    <script>
+        function startAuth() {
+            const params = {
+                client_id: '448561765111-a577cbig2r64jsi5mg3ltdui1oiv5s08.apps.googleusercontent.com',
+                redirect_uri: 'https://559f-115-244-45-193.ngrok-free.app/api/auth/google/callback',
+                response_type: 'code',
+                scope: 'profile email',
+                access_type: 'offline',
+                prompt: 'consent'
+            };
+
+            const url = 'https://accounts.google.com/o/oauth2/v2/auth?' + 
+                Object.entries(params)
+                    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                    .join('&');
+
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>
