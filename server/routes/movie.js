@@ -15,7 +15,14 @@ router.get('/', movieController.getAllMovies);
 router.get('/:id', movieController.getMovieById);
 router.post('/:id/rate', auth, movieController.rateMovie);
 
-// New watchlist routes (to be implemented)
+// Rating routes 
+router.post('/:id/rate', auth, movieController.rateMovie);
+router.get('/:id/ratings', movieController.getMovieRatings);
+router.get('/user/ratings', auth, movieController.getUserRatings);
+router.put('/:id/rate', auth, movieController.updateRating);
+router.delete('/:id/rate', auth, movieController.deleteRating);
+
+// Watchlist routes 
 router.post('/:id/watchlist', auth, movieController.addToWatchlist);
 router.delete('/:id/watchlist', auth, movieController.removeFromWatchlist);
 router.get('/user/watchlist', auth, movieController.getWatchlist);

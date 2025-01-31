@@ -169,6 +169,12 @@ A movie recommendation application with user authentication, personalized watchl
 - ✅ View user's watchlist
 - ✅ Persistent storage in MongoDB
 
+### Rating System
+- ✅ Rate movies (1-5 stars with reviews)
+- ✅ View movie ratings and reviews
+- ✅ Update/delete user ratings
+- ✅ Calculate average ratings
+
 ## API Endpoints
 
 ### Authentication Routes
@@ -216,6 +222,27 @@ DELETE /api/movies/:id/watchlist
 
 GET /api/movies/user/watchlist
 - View user's watchlist
+- Requires authentication
+
+### Rating Routes
+POST /api/movies/:id/rate
+- Rate a movie (1-5) with optional review
+- Requires authentication
+
+GET /api/movies/:id/ratings
+- Get all ratings for a movie
+- Public access
+
+GET /api/movies/user/ratings
+- Get all ratings by current user
+- Requires authentication
+
+PUT /api/movies/:id/rate
+- Update existing rating
+- Requires authentication
+
+DELETE /api/movies/:id/rate
+- Delete user's rating
 - Requires authentication
 
 ## Database Models
