@@ -75,7 +75,7 @@ const tmdbService = {
                     backdropPath: response.data.backdrop_path,
                     voteAverage: response.data.vote_average,
                     voteCount: response.data.vote_count,
-                    type: 'movie'  // Added this line
+                    type: 'movie'  
                 });
             }
     
@@ -83,8 +83,8 @@ const tmdbService = {
             const movieData = {
                 ...response.data,
                 dbId: movie._id,
-                userRating: null,  // We'll implement this later
-                inWatchlist: false // We'll implement this later
+                userRating: null,  
+                inWatchlist: false 
             };
     
             res.json(movieData);
@@ -92,6 +92,76 @@ const tmdbService = {
             console.error('TMDB API Error:', error.response?.data);
             res.status(500).json({ 
                 message: 'Error fetching movie details',
+                error: error.response?.data || error.message
+            });
+        }
+    },
+
+    getTrendingMovies: async (req, res) => {
+        try {
+            const url = `${BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}`;
+            
+            const response = await axios({
+                method: 'get',
+                url: url,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            res.json(response.data);
+        } catch (error) {
+            console.error('Full error:', error.response?.data);
+            res.status(500).json({ 
+                message: 'TMDB API Error',
+                error: error.response?.data || error.message
+            });
+        }
+    },
+
+    getUpcomingMovies: async (req, res) => {
+        try {
+            const url = `${BASE_URL}/movie/upcoming?api_key=${TMDB_API_KEY}`;
+            
+            const response = await axios({
+                method: 'get',
+                url: url,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            res.json(response.data);
+        } catch (error) {
+            console.error('Full error:', error.response?.data);
+            res.status(500).json({ 
+                message: 'TMDB API Error',
+                error: error.response?.data || error.message
+            });
+        }
+    },
+
+    getSimilarMovies: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const url = `${BASE_URL}/movie/${id}/similar?api_key=${TMDB_API_KEY}`;
+            
+            const response = await axios({
+                method: 'get',
+                url: url,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            res.json(response.data);
+        } catch (error) {
+            console.error('Full error:', error.response?.data);
+            res.status(500).json({ 
+                message: 'TMDB API Error',
                 error: error.response?.data || error.message
             });
         }

@@ -28,7 +28,46 @@ const userSchema = new mongoose.Schema({
         watchlist: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Movie'
-        }]
+        }],
+
+        //user preferences enhancements
+        language: {
+            primary: {
+                type: String,
+                default: 'en',
+                enum: ['en', 'es', 'fr', 'hi', 'ja', 'ko', 'zh']
+            },
+            subtitle: {
+                type: String,
+                default: 'en'
+            }
+        },
+        contentFilters: {
+            maxRating: {
+                type: String,
+                enum: ['G', 'PG', 'PG-13', 'R', 'NC-17'],
+                default: 'R'
+            },
+            excludedGenres: [{
+                type: String
+            }],
+            adultContent: {
+                type: Boolean,
+                default: false
+            }
+        },
+        genrePreferences: {
+            liked: [{
+                genre: String,
+                weight: {
+                    type: Number,
+                    default: 1,
+                    min: 0,
+                    max: 2
+                }
+            }],
+            disliked: [String]
+        }
     }
 }, {
     timestamps: true

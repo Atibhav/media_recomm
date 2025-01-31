@@ -162,6 +162,9 @@ A movie recommendation application with user authentication, personalized watchl
 - ✅ Detailed movie information
 - ✅ Integration with TMDB API
 - ✅ Local database caching of movie details
+- ✅ Trending Movies
+- ✅ Upcoming Movies
+- ✅ Similar Movies
 
 ### Watchlist Management
 - ✅ Add movies to personal watchlist
