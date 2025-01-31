@@ -22,7 +22,7 @@ router.get('/google', (req, res) => {
     console.log('Google auth route hit');
     
     const clientId = process.env.GOOGLE_CLIENT_ID;
-    const redirectUri = 'https://consistently-talk-particular-rage.trycloudflare.com/api/auth/google/callback';
+    const redirectUri = 'https://frequency-tube-england-pipes.trycloudflare.com/api/auth/google/callback';
     
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(`
@@ -69,7 +69,7 @@ router.get('/google/callback', async (req, res) => {
                 code,
                 client_id: process.env.GOOGLE_CLIENT_ID,
                 client_secret: process.env.GOOGLE_CLIENT_SECRET,
-                redirect_uri: 'https://consistently-talk-particular-rage.trycloudflare.com/api/auth/google/callback',
+                redirect_uri: 'https://frequency-tube-england-pipes.trycloudflare.com/api/auth/google/callback',
                 grant_type: 'authorization_code',
             }),
         });

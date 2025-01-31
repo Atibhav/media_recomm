@@ -309,3 +309,165 @@ GET /api/movies/similar/:id
 2. Build recommendation algorithm
 3. Add enhanced movie endpoints
 4. Begin frontend development
+
+# Movie Recommendation ML Service
+
+A sophisticated movie recommendation system that combines collaborative and content-based filtering to provide personalized movie recommendations.
+
+## Overview
+
+The ML service uses a hybrid approach to generate movie recommendations:
+- Collaborative Filtering: Finds similar users based on rating patterns
+- Content-Based Filtering: Matches movies based on user preferences
+- Hybrid System: Combines both approaches for optimal recommendations
+
+## Architecture
+
+### Core Components
+
+1. **MovieRecommender Class**
+   - Main recommendation engine
+   - Handles both collaborative and content-based filtering
+   - Manages database connections and data processing
+
+2. **Feature Weighting System**
+   ```python
+   weights = {
+       'genres': 0.4,        # Genre matching
+       'keywords': 0.3,      # Plot elements and themes
+       'director': 0.15,     # Director preferences
+       'cast': 0.15         # Actor preferences
+   }
+   ```
+
+3. **Database Integration**
+   - MongoDB connection for storing:
+     - User preferences
+     - Movie metadata
+     - User ratings
+     - Recommendation history
+
+## Features
+
+### 1. Collaborative Filtering
+- Uses k-Nearest Neighbors algorithm
+- Finds similar users based on rating patterns
+- Recommends movies liked by similar users
+
+### 2. Content-Based Filtering
+- Matches user preferences with movie attributes
+- Considers multiple features:
+  - Genres
+  - Keywords/themes
+  - Directors
+  - Cast members
+  - User-specific preferences
+
+### 3. Hybrid Recommendations
+- Combines both filtering approaches
+- Provides diverse recommendation sources
+- Includes confidence scores and reasoning
+
+## API Endpoints
+
+### Get Recommendations
+
+
+## Setup and Installation
+
+1. **Environment Setup**
+   ```bash
+   python -m venv env
+   source env/bin/activate  # Unix
+   env\Scripts\activate     # Windows
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Environment Variables**
+   Create a `.env` file:
+   ```
+   MONGODB_URI=your_mongodb_uri
+   ```
+
+4. **Run the Service**
+   ```bash
+   python app.py
+   ```
+
+## Technical Details
+
+### Machine Learning Components
+
+1. **KNN Model**
+   - Used for finding similar users
+   - Cosine similarity metric
+   - Configurable number of neighbors
+
+2. **Feature Engineering**
+   - Genre matching
+   - Keyword extraction
+   - Director/cast matching
+   - Rating normalization
+
+3. **Scoring System**
+   - Weighted feature matching
+   - Confidence score calculation
+   - Hybrid recommendation ranking
+
+### Data Processing
+
+1. **Input Processing**
+   - User preference extraction
+   - Rating matrix creation
+   - Feature normalization
+
+2. **Output Processing**
+   - Recommendation ranking
+   - Reason generation
+   - Confidence scoring
+
+## Error Handling
+
+The service includes comprehensive error handling for:
+- Invalid user IDs
+- Missing preferences
+- Database connection issues
+- Empty recommendation sets
+
+## Performance Considerations
+
+- Caching recommendations
+- Batch processing for large datasets
+- Efficient database queries
+- Scalable architecture
+
+## Future Enhancements
+
+Potential areas for improvement:
+1. Real-time recommendation updates
+2. A/B testing support
+3. Enhanced personalization
+4. Performance optimization
+5. Additional recommendation algorithms
+
+## Dependencies
+
+- Python 3.8+
+- MongoDB
+- Required Python packages:
+  ```
+  pandas
+  numpy
+  scikit-learn
+  pymongo
+  python-dotenv
+  flask
+  flask-cors
+  ```
+
+
+
