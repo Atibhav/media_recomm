@@ -8,10 +8,21 @@ const authController = {
         try {
             const { username, email, password } = req.body;
 
+            // Validate input
+            if (!username || !email || !password) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Please provide all required fields' 
+                });
+            }
+
             // Check if user already exists
             const existingUser = await User.findOne({ email });
             if (existingUser) {
-                return res.status(400).json({ message: 'User already exists' });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'User already exists' 
+                });
             }
 
             // Hash password
@@ -23,7 +34,8 @@ const authController = {
                 username,
                 email,
                 password: hashedPassword,
-                preferences: { genres: [] } // Initialize empty preferences
+                authType: 'local',
+                preferences: { genres: [] }
             });
 
             // Save user to database
@@ -37,6 +49,7 @@ const authController = {
             );
 
             res.status(201).json({
+                success: true,
                 token,
                 user: {
                     id: savedUser._id,
@@ -46,7 +59,11 @@ const authController = {
                 }
             });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            console.error('Registration error:', error);
+            res.status(500).json({ 
+                success: false, 
+                message: 'Server error during registration' 
+            });
         }
     },
 
@@ -55,16 +72,30 @@ const authController = {
         try {
             const { email, password } = req.body;
 
+            // Validate input
+            if (!email || !password) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Please provide email and password' 
+                });
+            }
+
             // Check if user exists
             const user = await User.findOne({ email });
             if (!user) {
-                return res.status(400).json({ message: 'User does not exist' });
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'Invalid credentials' 
+                });
             }
 
             // Validate password
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return res.status(400).json({ message: 'Invalid credentials' });
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'Invalid credentials' 
+                });
             }
 
             // Create JWT token
@@ -75,6 +106,7 @@ const authController = {
             );
 
             res.json({
+                success: true,
                 token,
                 user: {
                     id: user._id,
@@ -84,7 +116,11 @@ const authController = {
                 }
             });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            console.error('Login error:', error);
+            res.status(500).json({ 
+                success: false, 
+                message: 'Server error during login' 
+            });
         }
     },
 
@@ -93,16 +129,26 @@ const authController = {
         try {
             const user = await User.findById(req.user.id).select('-password');
             if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'User not found' 
+                });
             }
             res.json({
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                preferences: user.preferences
+                success: true,
+                user: {
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    preferences: user.preferences
+                }
             });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            console.error('Profile fetch error:', error);
+            res.status(500).json({ 
+                success: false, 
+                message: 'Server error while fetching profile' 
+            });
         }
     },
 
@@ -113,7 +159,10 @@ const authController = {
             
             // Validate genres
             if (!Array.isArray(genres)) {
-                return res.status(400).json({ message: 'Genres must be an array' });
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Genres must be an array' 
+                });
             }
 
             // Update user preferences
@@ -121,17 +170,21 @@ const authController = {
                 req.user.id,
                 { 
                     $set: { 
-                        preferences: { genres }
+                        'preferences.genres': genres 
                     }
                 },
                 { new: true }
             ).select('-password');
 
             if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'User not found' 
+                });
             }
 
             res.json({
+                success: true,
                 message: 'Preferences updated successfully',
                 user: {
                     id: user._id,
@@ -141,7 +194,11 @@ const authController = {
                 }
             });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            console.error('Preferences update error:', error);
+            res.status(500).json({ 
+                success: false, 
+                message: 'Server error while updating preferences' 
+            });
         }
     }
 };

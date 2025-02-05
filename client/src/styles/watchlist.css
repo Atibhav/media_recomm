@@ -1,0 +1,64 @@
+.watchlist-page {
+    padding: 20px;
+  }
+  
+  .empty-watchlist {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+  }
+  
+  .empty-watchlist p:first-child {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .empty-watchlist p:last-child {
+    font-size: 0.9rem;
+  }
+  
+  .movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+  }
+  
+  .loading,
+  .error {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+  }
+
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+  }
+  
+  .notification.success {
+    background-color: rgba(70, 211, 105, 0.9);
+    color: var(--text);
+  }
+  
+  .notification.error {
+    background-color: rgba(229, 9, 20, 0.9);
+    color: var(--text);
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }

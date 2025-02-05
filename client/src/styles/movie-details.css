@@ -1,0 +1,151 @@
+.movie-details {
+    min-height: 100vh;
+    background-color: var(--primary);
+    position: relative;
+  }
+  
+  .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    padding: 8px 16px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: var(--text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .back-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .movie-hero {
+    position: relative;
+    height: 60vh;
+    overflow: hidden;
+  }
+  
+  .backdrop {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .movie-info-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: var(--text);
+  }
+  
+  .movie-info-overlay h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .movie-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .movie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .main-info {
+    margin-bottom: 3rem;
+  }
+  
+  .overview {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+  
+  .genres {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .genre-tag {
+    padding: 4px 12px;
+    background-color: var(--secondary);
+    border-radius: 16px;
+    font-size: 0.9rem;
+  }
+  
+  .watchlist-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: opacity 0.2s ease;
+  }
+  
+  .watchlist-btn.add {
+    background-color: var(--accent);
+    color: var(--text);
+  }
+  
+  .watchlist-btn.remove {
+    background-color: var(--error);
+    color: var(--text);
+  }
+  
+  .watchlist-btn:hover {
+    opacity: 0.9;
+  }
+  
+  .additional-info {
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+  }
+  
+  .additional-info h3 {
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+  
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .info-item .label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  .info-item .value {
+    color: var(--text);
+    font-size: 1rem;
+  }
+  
+  .loading,
+  .error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    color: var(--text);
+    font-size: 1.2rem;
+  }
