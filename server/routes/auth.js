@@ -33,12 +33,10 @@ router.get('/google/callback',
             );
 
             // Redirect to frontend with token
-            const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
-            res.redirect(`${clientUrl}/auth-callback?token=${token}`);
+            res.redirect(`https://media-recomm-frontend.onrender.com/auth-callback?token=${token}`);
         } catch (error) {
             console.error('Token generation error:', error);
-            const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
-            res.redirect(`${clientUrl}/auth-callback?error=Authentication failed`);
+            res.redirect(`https://media-recomm-frontend.onrender.com/login?error=Authentication failed`);
         }
     }
 );

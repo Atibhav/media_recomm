@@ -14,12 +14,13 @@ console.log('Starting server...');
 
 // Updated CORS configuration for development
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-        ? process.env.CLIENT_URL 
-        : 'http://localhost:3000',
+    origin: [
+        'https://media-recomm-frontend.onrender.com',  // Your frontend URL
+        'http://localhost:3000'  // Local development
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
