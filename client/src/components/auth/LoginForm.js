@@ -59,10 +59,16 @@ function LoginForm() {
   }
 
   const handleGoogleLogin = () => {
-    const googleAuthUrl = `${process.env.REACT_APP_API_URL}/api/auth/google`;
-    console.log('Redirecting to:', googleAuthUrl); // Debug log
+    // Determine the API URL based on the environment
+    const apiUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://media-recomm.onrender.com'  // Your Render backend URL
+        : 'http://localhost:5000';             // Local development URL
+    
+    console.log('Current environment:', process.env.NODE_ENV);
+    const googleAuthUrl = `${apiUrl}/api/auth/google`;
+    console.log('Redirecting to:', googleAuthUrl);
     window.location.href = googleAuthUrl;
-  }
+}
 
   return (
     <div className="auth-container">
