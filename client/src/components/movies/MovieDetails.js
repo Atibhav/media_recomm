@@ -11,26 +11,58 @@ function MovieDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
+  const [recommendationsError, setRecommendationsError] = useState(null);
 
   const fetchMovieDetails = useCallback(async () => {
     try {
+      console.log('1. Fetching movie details for:', movieId);
       setIsLoading(true);
       const response = await movieAPI.getById(movieId);
+      console.log('2. Movie details response:', response.data);
       setMovie(response.data);
     } catch (err) {
+      console.error('3. Error fetching movie details:', err);
       setError('Failed to fetch movie details');
-      console.error('Error:', err);
     } finally {
       setIsLoading(false);
     }
   }, [movieId]);
 
+  const fetchRecommendations = useCallback(async () => {
+    try {
+      console.log('4. Fetching recommendations for movie:', movieId);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/movies/${movieId}/recommendations`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      console.log('5. Recommendations response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('6. Received recommendations:', data);
+      setRecommendations(data);
+    } catch (error) {
+      console.error('7. Error fetching recommendations:', error);
+      setRecommendationsError('Failed to fetch recommendations');
+    }
+  }, [movieId]);
+
   const checkWatchlistStatus = useCallback(async () => {
     try {
+      console.log('8. Checking watchlist status');
       const response = await watchlistAPI.checkStatus(user.id, movieId);
+      console.log('9. Watchlist status:', response.data);
       setIsInWatchlist(response.data.isInWatchlist);
     } catch (err) {
-      console.error('Error checking watchlist status:', err);
+      console.error('10. Error checking watchlist status:', err);
     }
   }, [movieId, user.id]);
 
@@ -50,8 +82,9 @@ function MovieDetails() {
 
   useEffect(() => {
     fetchMovieDetails();
+    fetchRecommendations();
     checkWatchlistStatus();
-  }, [fetchMovieDetails, checkWatchlistStatus]);
+  }, [fetchMovieDetails, fetchRecommendations, checkWatchlistStatus]);
 
   if (isLoading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -119,6 +152,26 @@ function MovieDetails() {
               <span className="value">{movie.original_language}</span>
             </div>
           </div>
+        </div>
+
+        {/* Add Recommendations Section */}
+        <div className="recommendations">
+          <h3>Recommended Movies</h3>
+          {recommendationsError ? (
+            <div className="error">{recommendationsError}</div>
+          ) : recommendations.length > 0 ? (
+            <div className="recommendations-grid">
+              {recommendations.map(rec => (
+                <div key={rec.id} className="recommendation-card" onClick={() => navigate(`/movie/${rec.id}`)}>
+                  <img src={rec.posterPath} alt={rec.title} />
+                  <h4>{rec.title}</h4>
+                  <span className="rating">★ {rec.voteAverage.toFixed(1)}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No recommendations available</p>
+          )}
         </div>
       </div>
     </div>
