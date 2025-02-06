@@ -18,7 +18,7 @@ router.get('/google', passport.authenticate('google', {
 
 router.get('/google/callback', 
     passport.authenticate('google', { 
-        failureRedirect: '/login',
+        failureRedirect: 'https://media-recomm-frontend.onrender.com/login',
         session: false
     }),
     (req, res) => {
