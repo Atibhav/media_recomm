@@ -10,14 +10,29 @@ require('./config/passport');
 const app = express();
 
 // Debug logging
-console.log('Starting server...');
+console.log('Setting up CORS with origins:', [
+    'https://media-recomm-frontend.onrender.com',
+    'http://localhost:3000'
+]);
 
 // Updated CORS configuration for development
 app.use(cors({
-    origin: [
-        'https://media-recomm-frontend.onrender.com',  // Your frontend URL
-        'http://localhost:3000'  // Local development
-    ],
+    origin: function(origin, callback) {
+        const allowedOrigins = [
+            'https://media-recomm-frontend.onrender.com',
+            'http://localhost:3000'
+        ];
+        console.log('Request origin:', origin);
+        
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) === -1) {
+            console.log('Origin not allowed:', origin);
+            return callback(null, false);
+        }
+        return callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

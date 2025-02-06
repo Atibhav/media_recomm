@@ -59,15 +59,20 @@ function LoginForm() {
   }
 
   const handleGoogleLogin = () => {
-    // Determine the API URL based on the environment
-    const apiUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://media-recomm.onrender.com'  // Your Render backend URL
-        : 'http://localhost:5000';             // Local development URL
+    // Hardcode both URLs for testing
+    const backendUrl = 'https://media-recomm.onrender.com';
+    const frontendUrl = 'https://media-recomm-frontend.onrender.com';
     
-    console.log('Current environment:', process.env.NODE_ENV);
-    const googleAuthUrl = `${apiUrl}/api/auth/google`;
+    console.log('Frontend URL:', frontendUrl);
+    console.log('Backend URL:', backendUrl);
+    
+    const googleAuthUrl = `${backendUrl}/api/auth/google`;
     console.log('Redirecting to:', googleAuthUrl);
-    window.location.href = googleAuthUrl;
+    
+    // Add a small delay to see the logs
+    setTimeout(() => {
+        window.location.href = googleAuthUrl;
+    }, 1000);
 }
 
   return (
