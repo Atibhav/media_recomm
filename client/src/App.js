@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext"
 import BrowsePage from './components/browse/BrowsePage'
 import UserProfile from './components/profile/UserProfile'
 import ErrorBoundary from './components/error/ErrorBoundary'
+import AuthCallback from './components/auth/AuthCallback'
 
 import "./App.css"
 import "./styles/main.css"
@@ -20,33 +21,6 @@ import "./styles/search.css"
 import "./styles/movie-details.css"  
 import './styles/browse.css'
 import './styles/error.css'
-
-// New component to handle auth callback
-function AuthCallback() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuth();
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('token');
-    const error = params.get('error');
-
-    if (token) {
-      // Store token
-      localStorage.setItem('token', token);
-      // Update auth context
-      login(token);
-      // Redirect to dashboard
-      navigate('/dashboard');
-    } else if (error) {
-      console.error('Auth error:', error);
-      navigate('/login', { state: { error } });
-    }
-  }, [navigate, login, location]);
-
-  return <div>Processing authentication...</div>;
-}
 
 function AppRoutes() {
   return (
