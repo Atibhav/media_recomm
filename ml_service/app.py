@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from recommender import MovieRecommender
+from models.recommender import MovieRecommender
 import os
 from dotenv import load_dotenv
 
