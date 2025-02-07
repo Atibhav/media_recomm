@@ -1,23 +1,34 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useState, useEffect, useCallback } from 'react';
-import { watchlistAPI } from '../../services/api';  // Update to use our API service
 
 function Navbar() {
   const { user, logout } = useAuth();
   const [watchlistCount, setWatchlistCount] = useState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);  // Add this
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchWatchlistCount = useCallback(async () => {
-    if (!user) return;
+    if (!user?.id) return;
     try {
-      const response = await watchlistAPI.getCount(user.id);
-      setWatchlistCount(response.data.count);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/watchlist/count/${user.id}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch watchlist count');
+      
+      const data = await response.json();
+      setWatchlistCount(data.count);
     } catch (err) {
       console.error('Failed to fetch watchlist count:', err);
+      setWatchlistCount(0); // Reset count on error
     }
   }, [user]);
 
@@ -31,7 +42,6 @@ function Navbar() {
     };
 
     window.addEventListener('watchlistUpdated', handleWatchlistUpdate);
-    
     return () => {
       window.removeEventListener('watchlistUpdated', handleWatchlistUpdate);
     };
@@ -50,7 +60,6 @@ function Navbar() {
     setIsProfileMenuOpen(!isProfileMenuOpen);
   };
 
-  // Close profile menu when clicking outside
   useEffect(() => {
     const closeMenu = (e) => {
       if (!e.target.closest('.profile-menu-container')) {

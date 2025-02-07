@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { movieAPI } from '../../services/api';
 import MovieCard from './MovieCard';
 
 function Dashboard() {
@@ -14,48 +13,117 @@ function Dashboard() {
     const fetchMovies = async () => {
       try {
         setIsLoading(true);
-        
-        // Fetch recommended movies
-        const recommendResponse = await movieAPI.getRecommended();
-        setRecommendations(recommendResponse.data);
+        setError(null);
+
+        // Fetch popular movies instead of recommended if user is new
+        const recommendResponse = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/movies/popular`,
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+
+        if (!recommendResponse.ok) {
+          throw new Error('Failed to fetch popular movies');
+        }
+
+        const recommendData = await recommendResponse.json();
+        setRecommendations(recommendData);
 
         // Fetch trending movies
-        const trendingResponse = await movieAPI.getTrending();
-        setTrendingMovies(trendingResponse.data);
+        const trendingResponse = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/movies/trending`,
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+
+        if (!trendingResponse.ok) {
+          throw new Error('Failed to fetch trending movies');
+        }
+
+        const trendingData = await trendingResponse.json();
+        setTrendingMovies(trendingData);
 
       } catch (err) {
-        setError('Failed to fetch movies');
-        console.error('Error:', err);
+        console.error('Error fetching movies:', err);
+        setError('Failed to load movies. Please try again later.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchMovies();
-  }, [user.id]);
+    if (user?.id) {
+      fetchMovies();
+    }
+  }, [user]);
 
-  if (isLoading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading">Loading your movie recommendations...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <div className="error">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Try Again</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard">
-      <section className="recommendations">
-        <h2>Recommended for You</h2>
-        <div className="movie-grid">
-          {recommendations.map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
-        </div>
-      </section>
+      <h1>Welcome{user?.name ? `, ${user.name}` : ''}!</h1>
+      
+      {recommendations.length > 0 && (
+        <section className="recommendations">
+          <h2>Popular Movies</h2>
+          <div className="movie-grid">
+            {recommendations.map(movie => (
+              <MovieCard 
+                key={movie.id} 
+                movie={movie}
+                onError={(e) => {
+                  e.target.src = '/placeholder-movie.jpg'; // Add a placeholder image
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
-      <section className="trending">
-        <h2>Trending Now</h2>
-        <div className="movie-grid">
-          {trendingMovies.map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
+      {trendingMovies.length > 0 && (
+        <section className="trending">
+          <h2>Trending Now</h2>
+          <div className="movie-grid">
+            {trendingMovies.map(movie => (
+              <MovieCard 
+                key={movie.id} 
+                movie={movie}
+                onError={(e) => {
+                  e.target.src = '/placeholder-movie.jpg'; // Add a placeholder image
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!recommendations.length && !trendingMovies.length && (
+        <div className="no-movies">
+          <p>No movies available at the moment. Please check back later.</p>
         </div>
-      </section>
+      )}
     </div>
   );
 }

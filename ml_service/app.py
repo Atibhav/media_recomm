@@ -1,6 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
-from models.recommender import MovieRecommender
+from recommender import MovieRecommender
 import os
 from dotenv import load_dotenv
 
@@ -9,61 +9,58 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Initialize recommender
 recommender = MovieRecommender()
 
-@app.route('/test', methods=['GET'])
-def test():
-    return jsonify({
-        'status': 'success',
-        'message': 'ML Service is running!'
-    })
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy', 'service': 'ml-service'})
 
-@app.route('/recommendations', methods=['POST'])
-def get_recommendations():
+@app.route('/api/recommendations/hybrid/<user_id>', methods=['GET'])
+def get_hybrid_recommendations(user_id):
     try:
-        data = request.json
-        user_id = data.get('userId')
-        
-        if not user_id:
-            return jsonify({
-                'success': False,
-                'error': 'userId is required'
-            }), 400
-            
-        # Get hybrid recommendations
-        recommendations = recommender.get_hybrid_recommendations(user_id)
+        limit = int(request.args.get('limit', 10))
+        recommendations = recommender.get_hybrid_recommendations(user_id, limit)
         return jsonify({
             'success': True,
             'recommendations': recommendations
         })
-        
     except Exception as e:
-        print(f"Error in get_recommendations: {str(e)}")
+        print(f"Error getting hybrid recommendations: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
         }), 500
 
-@app.route('/users/test', methods=['GET'])
-def get_test_user():
+@app.route('/api/recommendations/collaborative/<user_id>', methods=['GET'])
+def get_collaborative_recommendations(user_id):
     try:
-        user = recommender.db.users.find_one()
-        if user:
-            return jsonify({
-                'success': True,
-                'userId': str(user['_id'])
-            })
+        limit = int(request.args.get('limit', 10))
+        recommendations = recommender.get_collaborative_recommendations(user_id, limit)
         return jsonify({
-            'success': False,
-            'error': 'No users found'
+            'success': True,
+            'recommendations': recommendations
         })
     except Exception as e:
         return jsonify({
             'success': False,
             'error': str(e)
+        }), 500
+
+@app.route('/api/recommendations/content/<user_id>', methods=['GET'])
+def get_content_recommendations(user_id):
+    try:
+        limit = int(request.args.get('limit', 10))
+        recommendations = recommender.get_content_based_recommendations(user_id, limit)
+        return jsonify({
+            'success': True,
+            'recommendations': recommendations
         })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 if __name__ == '__main__':
     port = int(os.getenv('ML_SERVICE_PORT', 5001))
-    app.run(port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)

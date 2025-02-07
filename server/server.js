@@ -6,6 +6,8 @@ const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
 require('./config/passport');
+const watchlistRoutes = require('./routes/watchlist');
+
 
 const app = express();
 
@@ -65,10 +67,30 @@ const userRoutes = require('./routes/user');
 app.use('/api/auth', authRoutes);
 app.use('/api/movies', movieRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/watchlist', watchlistRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {
     res.json({ message: 'API is working' });
+});
+
+
+//ML_service route to proxy ML service requests
+app.get('/api/movies/recommended/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const response = await axios.get(
+            `${process.env.ML_SERVICE_URL}/api/recommendations/hybrid/${userId}`
+        );
+        
+        res.json(response.data.recommendations);
+    } catch (error) {
+        console.error('ML Service error:', error);
+        res.status(500).json({ 
+            message: 'Failed to fetch recommendations',
+            error: error.response?.data || error.message 
+        });
+    }
 });
 
 // MongoDB connection

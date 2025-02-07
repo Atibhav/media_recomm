@@ -18,7 +18,18 @@ const tmdbService = {
                 }
             });
             
-            res.json(response.data);
+            // Transform the data to match frontend expectations
+            const movies = response.data.results.map(movie => ({
+                id: movie.id,
+                title: movie.title,
+                overview: movie.overview,
+                posterPath: movie.poster_path,
+                backdropPath: movie.backdrop_path,
+                releaseDate: movie.release_date,
+                voteAverage: movie.vote_average
+            }));
+            
+            res.json(movies);
         } catch (error) {
             console.error('Full error:', error.response?.data);
             res.status(500).json({ 
@@ -27,6 +38,7 @@ const tmdbService = {
             });
         }
     },
+
 
     searchMovies: async (req, res) => {
         try {
@@ -110,7 +122,51 @@ const tmdbService = {
                 }
             });
             
-            res.json(response.data);
+            // Transform the data to match frontend expectations
+            const movies = response.data.results.map(movie => ({
+                id: movie.id,
+                title: movie.title,
+                overview: movie.overview,
+                posterPath: movie.poster_path,
+                backdropPath: movie.backdrop_path,
+                releaseDate: movie.release_date,
+                voteAverage: movie.vote_average
+            }));
+            
+            res.json(movies);
+        } catch (error) {
+            console.error('Full error:', error.response?.data);
+            res.status(500).json({ 
+                message: 'TMDB API Error',
+                error: error.response?.data || error.message
+            });
+        }
+    },
+
+    getMovieRecommendations: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const url = `${BASE_URL}/movie/${id}/recommendations?api_key=${TMDB_API_KEY}`;
+            
+            const response = await axios({
+                method: 'get',
+                url: url,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            // Transform the data to match frontend expectations
+            const recommendations = response.data.results.map(movie => ({
+                id: movie.id,
+                title: movie.title,
+                posterPath: movie.poster_path,
+                releaseDate: movie.release_date,
+                voteAverage: movie.vote_average
+            }));
+            
+            res.json(recommendations);
         } catch (error) {
             console.error('Full error:', error.response?.data);
             res.status(500).json({ 

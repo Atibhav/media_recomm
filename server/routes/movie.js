@@ -12,6 +12,8 @@ router.get('/:id/details', tmdbService.getMovieDetails);  // Keep your existing 
 router.get('/trending', tmdbService.getTrendingMovies);       // Add this
 router.get('/upcoming', tmdbService.getUpcomingMovies);       // Add this
 router.get('/:id/similar', tmdbService.getSimilarMovies);
+router.get('/recommended/:userId', auth, tmdbService.getRecommendedMovies);
+router.get('/:id/recommendations', tmdbService.getMovieRecommendations);
 
 // Database routes
 router.get('/', movieController.getAllMovies);
@@ -30,5 +32,6 @@ router.delete('/:id/rate', auth, movieController.deleteRating);
 router.post('/:id/watchlist', auth, movieController.addToWatchlist);
 router.delete('/:id/watchlist', auth, movieController.removeFromWatchlist);
 router.get('/user/watchlist', auth, movieController.getWatchlist);
+
 
 module.exports = router;
