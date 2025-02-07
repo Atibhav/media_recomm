@@ -3,17 +3,79 @@ const movieController = require('../controllers/movieController');
 const tmdbService = require('../services/tmdbService');
 const auth = require('../middleware/auth');
 
-console.log('TMDB Service:', tmdbService); // Temporary debug log
+// TMDB routes - Note: Order matters! More specific routes first
+router.get('/popular', async (req, res) => {
+    try {
+        const movies = await tmdbService.getPopularMovies();
+        res.json(movies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch popular movies' });
+    }
+});
 
-// TMDB routes
-router.get('/popular', tmdbService.getPopularMovies);
-router.get('/search', tmdbService.searchMovies);
-router.get('/:id/details', tmdbService.getMovieDetails);  // Keep your existing path
-router.get('/trending', tmdbService.getTrendingMovies);       // Add this
-router.get('/upcoming', tmdbService.getUpcomingMovies);       // Add this
-router.get('/:id/similar', tmdbService.getSimilarMovies);
-router.get('/recommended/:userId', auth, tmdbService.getRecommendedMovies);
-router.get('/:id/recommendations', tmdbService.getMovieRecommendations);
+router.get('/search', async (req, res) => {
+    try {
+        const movies = await tmdbService.searchMovies(req.query.query);
+        res.json(movies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to search movies' });
+    }
+});
+
+router.get('/trending', async (req, res) => {
+    try {
+        const movies = await tmdbService.getTrendingMovies();
+        res.json(movies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch trending movies' });
+    }
+});
+
+router.get('/upcoming', async (req, res) => {
+    try {
+        const movies = await tmdbService.getUpcomingMovies();
+        res.json(movies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch upcoming movies' });
+    }
+});
+
+router.get('/recommended/:userId', auth, async (req, res) => {
+    try {
+        const movies = await tmdbService.getRecommendedMovies(req.params.userId);
+        res.json(movies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch recommended movies' });
+    }
+});
+
+// Routes with ID parameter should come after specific routes
+router.get('/:id/details', async (req, res) => {
+    try {
+        const movie = await tmdbService.getMovieDetails(req.params.id);
+        res.json(movie);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch movie details' });
+    }
+});
+
+router.get('/:id/similar', async (req, res) => {
+    try {
+        const movies = await tmdbService.getSimilarMovies(req.params.id);
+        res.json(movies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch similar movies' });
+    }
+});
+
+router.get('/:id/recommendations', async (req, res) => {
+    try {
+        const movies = await tmdbService.getMovieRecommendations(req.params.id);
+        res.json(movies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch movie recommendations' });
+    }
+});
 
 // Database routes
 router.get('/', movieController.getAllMovies);
@@ -27,11 +89,9 @@ router.get('/user/ratings', auth, movieController.getUserRatings);
 router.put('/:id/rate', auth, movieController.updateRating);
 router.delete('/:id/rate', auth, movieController.deleteRating);
 
-
 // Watchlist routes 
 router.post('/:id/watchlist', auth, movieController.addToWatchlist);
 router.delete('/:id/watchlist', auth, movieController.removeFromWatchlist);
 router.get('/user/watchlist', auth, movieController.getWatchlist);
-
 
 module.exports = router;
