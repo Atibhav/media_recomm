@@ -62,5 +62,6 @@ def get_content_recommendations(user_id):
         }), 500
 
 if __name__ == '__main__':
-    port = int(os.getenv('ML_SERVICE_PORT', 5001))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    port = int(os.getenv('PORT', os.getenv('ML_SERVICE_PORT', 5001)))
+    print(f"Starting ML service on port {port}") #logging to know which port
+    app.run(host='0.0.0.0', port=port)
