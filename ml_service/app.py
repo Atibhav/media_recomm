@@ -1,8 +1,13 @@
+import os
+import sys
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from models.recommender import MovieRecommender
-import os
 from dotenv import load_dotenv
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_dir)
+
+from models.recommender import MovieRecommender
 
 load_dotenv()
 
