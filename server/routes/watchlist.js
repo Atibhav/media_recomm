@@ -3,7 +3,7 @@ const auth = require('../middleware/auth');
 const watchlistController = require('../controllers/watchlistController');
 
 // Get watchlist count
-router.get('/count/:userId', auth, watchlistController.getCount);
+router.get('/count/:userId', auth, watchlistController.getWatchlistCount);
 
 // Get user's watchlist
 router.get('/:userId', auth, watchlistController.getWatchlist);
