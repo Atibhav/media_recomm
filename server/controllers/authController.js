@@ -6,13 +6,22 @@ const authController = {
     // Register new user
     register: async (req, res) => {
         try {
-            const { username, email, password } = req.body;
+            const { email, password, username } = req.body;
 
             // Validate input
-            if (!username || !email || !password) {
+            if (!email || !password) {
                 return res.status(400).json({ 
                     success: false, 
-                    message: 'Please provide all required fields' 
+                    message: 'Please provide email and password' 
+                });
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Please provide a valid email address'
                 });
             }
 
@@ -25,13 +34,16 @@ const authController = {
                 });
             }
 
+            // Generate username from email if not provided
+            const generatedUsername = username || email.split('@')[0];
+
             // Hash password
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
             // Create new user
             const newUser = new User({
-                username,
+                username: generatedUsername,
                 email,
                 password: hashedPassword,
                 authType: 'local',
@@ -62,7 +74,8 @@ const authController = {
             console.error('Registration error:', error);
             res.status(500).json({ 
                 success: false, 
-                message: 'Server error during registration' 
+                message: 'Server error during registration',
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }
     },
