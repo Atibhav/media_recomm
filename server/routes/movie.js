@@ -6,10 +6,14 @@ const auth = require('../middleware/auth');
 // TMDB routes - Note: Order matters! More specific routes first
 router.get('/popular', async (req, res) => {
     try {
+        if (!process.env.TMDB_API_KEY) {
+            throw new Error('TMDB API key not configured');
+        }
         const movies = await tmdbService.getPopularMovies();
         res.json(movies);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch popular movies' });
+        console.error('Popular movies error:', error);
+        res.status(500).json({ error: 'Failed to fetch popular movies', details: error.message });
     }
 });
 

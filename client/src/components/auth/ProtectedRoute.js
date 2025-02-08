@@ -11,7 +11,6 @@ function ProtectedRoute({ children }) {
   }
 
   if (!isAuthenticated) {
-    // Redirect to login page and save the attempted URL
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
@@ -19,4 +18,3 @@ function ProtectedRoute({ children }) {
 }
 
 export default ProtectedRoute
-

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { movieAPI } from '../../services/api';
 import MovieCard from './MovieCard';
+import SkeletonLoader from '../common/SkeletonLoader';
+import ErrorFallback from '../error/ErrorFallback';
 
 function Dashboard() {
   const { user } = useAuth();
@@ -15,40 +18,13 @@ function Dashboard() {
         setIsLoading(true);
         setError(null);
 
-        // Fetch popular movies instead of recommended if user is new
-        const recommendResponse = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/movies/popular`,
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-          }
-        );
+        const [recommendData, trendingData] = await Promise.all([
+          movieAPI.browse({ type: 'popular' }),
+          movieAPI.getTrending()
+        ]);
 
-        if (!recommendResponse.ok) {
-          throw new Error('Failed to fetch popular movies');
-        }
-
-        const recommendData = await recommendResponse.json();
-        setRecommendations(recommendData);
-
-        // Fetch trending movies
-        const trendingResponse = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/movies/trending`,
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-          }
-        );
-
-        if (!trendingResponse.ok) {
-          throw new Error('Failed to fetch trending movies');
-        }
-
-        const trendingData = await trendingResponse.json();
-        setTrendingMovies(trendingData);
-
+        setRecommendations(recommendData.data);
+        setTrendingMovies(trendingData.data);
       } catch (err) {
         console.error('Error fetching movies:', err);
         setError('Failed to load movies. Please try again later.');
@@ -63,22 +39,11 @@ function Dashboard() {
   }, [user]);
 
   if (isLoading) {
-    return (
-      <div className="loading-container">
-        <div className="loading">Loading your movie recommendations...</div>
-      </div>
-    );
+    return <SkeletonLoader count={8} />;
   }
 
   if (error) {
-    return (
-      <div className="error-container">
-        <div className="error">
-          <p>{error}</p>
-          <button onClick={() => window.location.reload()}>Try Again</button>
-        </div>
-      </div>
-    );
+    return <ErrorFallback error={{ message: error }} resetError={() => window.location.reload()} />;
   }
 
   return (
@@ -94,7 +59,7 @@ function Dashboard() {
                 key={movie.id} 
                 movie={movie}
                 onError={(e) => {
-                  e.target.src = '/placeholder-movie.jpg'; // Add a placeholder image
+                  e.target.src = '/placeholder-movie.jpg';
                 }}
               />
             ))}
@@ -111,7 +76,7 @@ function Dashboard() {
                 key={movie.id} 
                 movie={movie}
                 onError={(e) => {
-                  e.target.src = '/placeholder-movie.jpg'; // Add a placeholder image
+                  e.target.src = '/placeholder-movie.jpg';
                 }}
               />
             ))}

@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import axios from 'axios';
-
-// Add custom event
-const refreshWatchlistCount = new CustomEvent('watchlistUpdated');
+import { watchlistAPI } from '../../services/api';
 
 function MovieCard({ movie, onRemove, isWatchlist = false }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -21,17 +18,13 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
           message: 'Removed from watchlist'
         });
       } else {
-        await axios.post('/api/user/watchlist', {
-          userId: user.id,
-          movieId: movie.id
-        });
+        await watchlistAPI.addToWatchlist(user.id, movie.id);
         setNotification({
           type: 'success',
           message: 'Added to watchlist!'
         });
       }
-      // Dispatch event to update counter
-      window.dispatchEvent(refreshWatchlistCount);
+      window.dispatchEvent(new CustomEvent('watchlistUpdated'));
     } catch (error) {
       setNotification({
         type: 'error',

@@ -7,12 +7,14 @@ function FilterBar({ onSearch, onSort, onFilterGenre, currentFilters }) {
         onChange={(e) => onSearch(e.target.value)}
         value={currentFilters.search}  
         className="search-input"
+        aria-label="Search movies"
       />
       
       <select 
         onChange={(e) => onSort(e.target.value)} 
         value={currentFilters.sortBy}  
         className="sort-select"
+        aria-label="Sort movies by"
       >
         <option value="">Sort by</option>
         <option value="rating">Rating</option>
@@ -24,6 +26,7 @@ function FilterBar({ onSearch, onSort, onFilterGenre, currentFilters }) {
         onChange={(e) => onFilterGenre(e.target.value)}
         value={currentFilters.genre}  
         className="genre-select"
+        aria-label="Filter by genre"
       >
         <option value="">All Genres</option>
         <option value="action">Action</option>
@@ -33,7 +36,7 @@ function FilterBar({ onSearch, onSort, onFilterGenre, currentFilters }) {
         <option value="thriller">Thriller</option>
       </select>
     </div>
-  )
+  );
 }
 
-export default FilterBar
+export default FilterBar;

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { watchlistAPI } from '../../services/api';
 import MovieCard from '../dashboard/MovieCard';
+import SkeletonLoader from '../common/SkeletonLoader';
+import ErrorFallback from '../error/ErrorFallback';
 
 function WatchlistPage() {
   const { user } = useAuth();
@@ -25,29 +27,13 @@ function WatchlistPage() {
 
     fetchWatchlist();
 
-    // Listen for watchlist updates from other components
-    const handleWatchlistUpdate = () => {
-      fetchWatchlist();
-    };
-
+    const handleWatchlistUpdate = () => fetchWatchlist();
     window.addEventListener('watchlistUpdated', handleWatchlistUpdate);
-    return () => {
-      window.removeEventListener('watchlistUpdated', handleWatchlistUpdate);
-    };
+    return () => window.removeEventListener('watchlistUpdated', handleWatchlistUpdate);
   }, [user.id]);
 
-  const handleRemoveFromWatchlist = async (movieId) => {
-    try {
-      await watchlistAPI.removeFromWatchlist(user.id, movieId);
-      setWatchlist(watchlist.filter(movie => movie.id !== movieId));
-      window.dispatchEvent(new CustomEvent('watchlistUpdated'));
-    } catch (err) {
-      console.error('Error removing from watchlist:', err);
-    }
-  };
-
-  if (isLoading) return <div className="loading">Loading watchlist...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (isLoading) return <SkeletonLoader />;
+  if (error) return <ErrorFallback error={{ message: error }} resetError={() => setError(null)} />;
 
   return (
     <div className="watchlist-page">

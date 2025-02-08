@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { movieAPI } from '../../services/api';
 import MovieCard from '../dashboard/MovieCard';
+import SkeletonLoader from '../common/SkeletonLoader';
+import ErrorFallback from '../error/ErrorFallback';
 
 function BrowsePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,13 +29,15 @@ function BrowsePage() {
       const response = await movieAPI.getGenres();
       setGenres(response.data);
     } catch (err) {
-      console.error('Failed to fetch genres:', err);
+      setError('Failed to fetch genres. Please try again later.');
+      console.error('Genre fetch error:', err);
     }
   }, []);
 
   const fetchMovies = useCallback(async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const response = await movieAPI.browse({ 
         ...filters, 
         page: currentPage 
@@ -43,8 +47,8 @@ function BrowsePage() {
       setMovies(moviesList);
       setTotalPages(total);
     } catch (err) {
-      setError('Failed to fetch movies');
-      console.error('Error:', err);
+      setError(err.response?.data?.message || 'Failed to fetch movies. Please try again.');
+      console.error('Movie fetch error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -155,8 +159,22 @@ function BrowsePage() {
     return pages;
   };
 
-  if (isLoading && !movies.length) return <div className="loading">Loading movies...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (isLoading && !movies.length) {
+    return (
+      <div className="movie-grid">
+        {[...Array(12)].map((_, i) => (
+          <SkeletonLoader key={i} />
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorFallback error={{ message: error }} resetError={() => {
+      setError(null);
+      fetchMovies();
+    }} />;
+  }
 
   return (
     <div className="browse-page">

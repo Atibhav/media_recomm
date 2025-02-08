@@ -1,49 +1,52 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import useAuth from "../../hooks/useAuth"
+import { authAPI } from "../../services/api"
+import { setAuthToken } from "../../utils/auth"
 
 function RegisterForm() {
   const navigate = useNavigate()
-  const { register } = useAuth()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   })
   const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
+    setIsLoading(true)
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match")
+      setIsLoading(false)
       return
     }
 
     try {
-      const result = await register({
+      const response = await authAPI.register({
         email: formData.email,
         password: formData.password
-      })
-      
-      if (result.success) {
-        // Navigate to dashboard after successful registration
-        navigate("/dashboard")
-      } else {
-        setError(result.error || "Registration failed")
+      });
+
+      const { token } = response.data;
+      if (token) {
+        setAuthToken(token);
+        login(token);
+        navigate("/dashboard");
       }
     } catch (err) {
-      setError("An error occurred during registration")
+      setError(err.response?.data?.message || "Registration failed");
+    } finally {
+      setIsLoading(false)
     }
   }
 

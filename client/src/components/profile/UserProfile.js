@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { userAPI } from '../../services/api';
+import ErrorFallback from '../error/ErrorFallback';
+import SkeletonLoader from '../common/SkeletonLoader';
 
 function UserProfile() {
   const { user } = useAuth();
@@ -52,7 +54,8 @@ function UserProfile() {
         language: newLanguagePrefs
       }));
     } catch (err) {
-      console.error('Error updating language preferences:', err);
+      setError('Failed to update language preferences');
+      console.error('Error:', err);
     }
   };
 
@@ -73,8 +76,8 @@ function UserProfile() {
     }
   };
 
-  if (isLoading) return <div className="loading">Loading profile...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (isLoading) return <SkeletonLoader />;
+  if (error) return <ErrorFallback error={{ message: error }} resetError={() => setError(null)} />;
 
   return (
     <div className="user-profile">

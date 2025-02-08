@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { movieAPI, watchlistAPI } from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
+import SkeletonLoader from '../common/SkeletonLoader';
+import ErrorFallback from '../error/ErrorFallback';
 
 function MovieDetails() {
   const { movieId } = useParams();
@@ -16,14 +18,12 @@ function MovieDetails() {
 
   const fetchMovieDetails = useCallback(async () => {
     try {
-      console.log('1. Fetching movie details for:', movieId);
       setIsLoading(true);
       const response = await movieAPI.getById(movieId);
-      console.log('2. Movie details response:', response.data);
       setMovie(response.data);
     } catch (err) {
-      console.error('3. Error fetching movie details:', err);
       setError('Failed to fetch movie details');
+      console.error('Error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -31,27 +31,11 @@ function MovieDetails() {
 
   const fetchRecommendations = useCallback(async () => {
     try {
-      console.log('4. Fetching recommendations for movie:', movieId);
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/movies/${movieId}/recommendations`,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-      console.log('5. Recommendations response status:', response.status);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('6. Received recommendations:', data);
-      setRecommendations(data);
-    } catch (error) {
-      console.error('7. Error fetching recommendations:', error);
+      const response = await movieAPI.getRecommendations(movieId);
+      setRecommendations(response.data);
+    } catch (err) {
       setRecommendationsError('Failed to fetch recommendations');
+      console.error('Error:', err);
     }
   }, [movieId]);
 

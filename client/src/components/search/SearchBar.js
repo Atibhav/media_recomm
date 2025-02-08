@@ -21,6 +21,7 @@ function SearchBar() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
+                aria-label="Search movies"
             />
             <button type="submit" className="search-button">
                 Search

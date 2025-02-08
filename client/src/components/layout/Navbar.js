@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useState, useEffect, useCallback } from 'react';
+import { watchlistAPI } from '../../services/api';
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -13,22 +14,11 @@ function Navbar() {
   const fetchWatchlistCount = useCallback(async () => {
     if (!user?.id) return;
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/watchlist/count/${user.id}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-
-      if (!response.ok) throw new Error('Failed to fetch watchlist count');
-      
-      const data = await response.json();
-      setWatchlistCount(data.count);
+      const response = await watchlistAPI.getWatchlist(user.id);
+      setWatchlistCount(response.data.length);
     } catch (err) {
       console.error('Failed to fetch watchlist count:', err);
-      setWatchlistCount(0); // Reset count on error
+      setWatchlistCount(0);
     }
   }, [user]);
 
@@ -37,14 +27,9 @@ function Navbar() {
   }, [fetchWatchlistCount]);
 
   useEffect(() => {
-    const handleWatchlistUpdate = () => {
-      fetchWatchlistCount();
-    };
-
+    const handleWatchlistUpdate = () => fetchWatchlistCount();
     window.addEventListener('watchlistUpdated', handleWatchlistUpdate);
-    return () => {
-      window.removeEventListener('watchlistUpdated', handleWatchlistUpdate);
-    };
+    return () => window.removeEventListener('watchlistUpdated', handleWatchlistUpdate);
   }, [fetchWatchlistCount]);
 
   const handleSearch = (e) => {

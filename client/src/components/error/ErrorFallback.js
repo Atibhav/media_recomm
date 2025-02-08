@@ -1,11 +1,21 @@
 function ErrorFallback({ error, resetError }) {
-    return (
-      <div className="error-fallback">
-        <h2>Something went wrong:</h2>
-        <pre>{error.message}</pre>
-        <button onClick={resetError}>Try again</button>
-      </div>
-    );
-  }
-  
-  export default ErrorFallback;
+  const isAuthError = error.status === 401;
+
+  return (
+    <div className="error-fallback">
+      <h2>{isAuthError ? 'Authentication Error' : 'Something went wrong'}</h2>
+      <pre>{error.message}</pre>
+      {isAuthError ? (
+        <button onClick={() => window.location.href = '/login'}>
+          Go to Login
+        </button>
+      ) : (
+        <button onClick={resetError} className="retry-button">
+          Try again
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default ErrorFallback;

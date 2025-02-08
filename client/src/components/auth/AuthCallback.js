@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import { setAuthToken } from '../../utils/auth';
 
 function AuthCallback() {
     const navigate = useNavigate();
@@ -12,14 +13,10 @@ function AuthCallback() {
         const token = params.get('token');
         
         if (token) {
-            // Store token and update auth context
-            localStorage.setItem('token', token);
+            setAuthToken(token);
             login(token);
-            
-            // Redirect to dashboard
             navigate('/dashboard');
         } else {
-            // Handle error case
             navigate('/login');
         }
     }, [navigate, login, location]);

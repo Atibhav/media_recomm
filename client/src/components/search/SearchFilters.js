@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { movieAPI } from '../../services/api';
 
 function SearchFilters({ onFilterChange }) {
   const [filters, setFilters] = useState({
@@ -7,12 +8,30 @@ function SearchFilters({ onFilterChange }) {
     rating: '',
     sortBy: 'relevance'
   });
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await movieAPI.getGenres();
+        setGenres(response.data);
+      } catch (err) {
+        console.error('Failed to fetch genres:', err);
+      }
+    };
+    fetchGenres();
+  }, []);
 
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     onFilterChange(newFilters);
   };
+
+  const years = Array.from(
+    { length: new Date().getFullYear() - 1900 }, 
+    (_, i) => new Date().getFullYear() - i
+  );
 
   return (
     <div className="search-filters">
@@ -23,11 +42,9 @@ function SearchFilters({ onFilterChange }) {
           onChange={(e) => handleFilterChange('genre', e.target.value)}
         >
           <option value="">All Genres</option>
-          <option value="action">Action</option>
-          <option value="comedy">Comedy</option>
-          <option value="drama">Drama</option>
-          <option value="horror">Horror</option>
-          <option value="thriller">Thriller</option>
+          {genres.map(genre => (
+            <option key={genre} value={genre.toLowerCase()}>{genre}</option>
+          ))}
         </select>
       </div>
 
@@ -38,11 +55,9 @@ function SearchFilters({ onFilterChange }) {
           onChange={(e) => handleFilterChange('year', e.target.value)}
         >
           <option value="">All Years</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
-          <option value="2021">2021</option>
-          <option value="2020">2020</option>
+          {years.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))}
         </select>
       </div>
 

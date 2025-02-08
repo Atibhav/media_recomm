@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useNavigate, useLocation, Link } from "react-router-dom"
 import useAuth from "../../hooks/useAuth"
+import { authAPI } from "../../services/api"
+import { setAuthToken } from "../../utils/auth"
 
 function LoginForm() {
   const navigate = useNavigate()
@@ -15,10 +17,7 @@ function LoginForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e) => {
@@ -27,24 +26,12 @@ function LoginForm() {
     setIsLoading(true)
     
     try {
-      console.log('Attempting login with:', formData); // Debug log
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await authAPI.login(formData);
+      const { token } = response.data;
 
-      const data = await response.json();
-      console.log('Login response:', data); // Debug log
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      if (data.token) {
-        localStorage.setItem('token', data.token);
+      if (token) {
+        setAuthToken(token);
+        login(token);
         const from = location.state?.from?.pathname || "/dashboard";
         navigate(from);
       } else {
@@ -52,28 +39,17 @@ function LoginForm() {
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.message || "An error occurred during login");
+      setError(err.response?.data?.message || "An error occurred during login");
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleGoogleLogin = () => {
-    // Hardcode both URLs for testing
-    const backendUrl = 'https://media-recomm.onrender.com';
-    const frontendUrl = 'https://media-recomm-frontend.onrender.com';
-    
-    console.log('Frontend URL:', frontendUrl);
-    console.log('Backend URL:', backendUrl);
-    
+    const backendUrl = process.env.REACT_APP_API_URL || 'https://media-recomm.onrender.com';
     const googleAuthUrl = `${backendUrl}/api/auth/google`;
-    console.log('Redirecting to:', googleAuthUrl);
-    
-    // Add a small delay to see the logs
-    setTimeout(() => {
-        window.location.href = googleAuthUrl;
-    }, 1000);
-}
+    window.location.href = googleAuthUrl;
+  }
 
   return (
     <div className="auth-container">

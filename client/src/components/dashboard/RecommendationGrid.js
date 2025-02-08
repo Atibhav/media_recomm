@@ -1,5 +1,6 @@
 import MovieCard from "./MovieCard"
 import SkeletonLoader from "../common/SkeletonLoader"
+import ErrorFallback from "../error/ErrorFallback"
 
 function RecommendationGrid({ movies, isLoading, error }) {
   if (isLoading) {
@@ -13,14 +14,7 @@ function RecommendationGrid({ movies, isLoading, error }) {
   }
 
   if (error) {
-    return (
-      <div className="error-container">
-        <div className="error-message">Error: {error}</div>
-        <button onClick={() => window.location.reload()} className="retry-button">
-          Try Again
-        </button>
-      </div>
-    )
+    return <ErrorFallback error={{ message: error }} resetError={() => window.location.reload()} />;
   }
 
   if (!movies?.length) {
@@ -28,7 +22,7 @@ function RecommendationGrid({ movies, isLoading, error }) {
       <div className="empty-state">
         <p>No movies found matching your criteria</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -37,7 +31,7 @@ function RecommendationGrid({ movies, isLoading, error }) {
         <MovieCard key={movie.id} movie={movie} />
       ))}
     </div>
-  )
+  );
 }
 
-export default RecommendationGrid
+export default RecommendationGrid;
