@@ -56,4 +56,11 @@ export const watchlistAPI = {
     checkStatus: (movieId) => api.get(`/api/watchlist/check/${movieId}`)
 };
 
+export const userAPI = {
+  getProfile: () => api.get('/api/users/profile'),
+  updateProfile: (data) => api.put('/api/users/profile', data),
+  getPreferences: () => api.get('/api/users/preferences'),
+  updatePreferences: (data) => api.put('/api/users/preferences', data)
+};
+
 export default api;
