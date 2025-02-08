@@ -1,61 +1,59 @@
 import axios from 'axios';
-import { getAuthToken } from '../utils/auth';
 
-// Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
-  withCredentials: true
+    baseURL: process.env.REACT_APP_API_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    withCredentials: true
 });
 
-// Add auth token to all requests
-api.interceptors.request.use(config => {
-    const token = getAuthToken();
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+// Add auth token to requests
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-    return config;
-});
+);
 
-// Handle responses
+// Handle auth errors
 api.interceptors.response.use(
-    response => response,
-    error => {
+    (response) => response,
+    (error) => {
         if (error.response?.status === 401) {
-            console.log('Unauthorized access, redirecting to login');
-            // You might want to redirect to login here
+            localStorage.removeItem('token');
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }
 );
 
-// API endpoints organized by feature
 export const authAPI = {
-  login: (credentials) => api.post('/api/auth/login', credentials),
-  register: (userData) => api.post('/api/auth/register', userData),
-  logout: () => api.get('/api/auth/logout')
+    login: (credentials) => api.post('/api/auth/login', credentials),
+    register: (userData) => api.post('/api/auth/register', userData),
+    logout: () => api.post('/api/auth/logout'),
+    verifyToken: () => api.get('/api/auth/verify')
 };
 
 export const movieAPI = {
-  browse: (params) => api.get('/api/movies/browse', { params }),
-  getById: (id) => api.get(`/api/movies/${id}`),
-  search: (query) => api.get('/api/movies/search', { params: { q: query } }),
-  getGenres: () => api.get('/api/movies/genres'),
-  getRecommended: (userId) => api.get(`/api/movies/recommended/${userId}`),
-  getTrending: () => api.get('/api/movies/trending')
+    getPopular: () => api.get('/api/movies/popular'),
+    search: (query) => api.get('/api/movies/search', { params: { query }}),
+    getTrending: () => api.get('/api/movies/trending'),
+    getById: (id) => api.get(`/api/movies/${id}/details`),
+    getRecommended: (userId) => api.get(`/api/movies/recommended/${userId}`)
 };
 
 export const watchlistAPI = {
-  getWatchlist: (userId) => api.get(`/api/user/watchlist/${userId}`),
-  addToWatchlist: (userId, movieId) => api.post('/api/user/watchlist', { userId, movieId }),
-  removeFromWatchlist: (userId, movieId) => api.delete(`/api/user/watchlist/${userId}/${movieId}`),
-  checkStatus: (userId, movieId) => api.get(`/api/user/watchlist/${userId}/check/${movieId}`)
-};
-
-export const userAPI = {
-  getPreferences: (userId) => api.get(`/api/user/preferences/${userId}`),
-  updateLanguage: (userId, data) => api.put(`/api/user/preferences/${userId}/language`, data),
-  updateFilters: (userId, data) => api.put(`/api/user/preferences/${userId}/filters`, data),
-  updateGenres: (userId, data) => api.put(`/api/user/preferences/${userId}/genres`, data)
+    getWatchlist: () => api.get('/api/watchlist'),
+    addToWatchlist: (movieId) => api.post('/api/watchlist', { movieId }),
+    removeFromWatchlist: (movieId) => api.delete(`/api/watchlist/${movieId}`),
+    checkStatus: (movieId) => api.get(`/api/watchlist/check/${movieId}`)
 };
 
 export default api;

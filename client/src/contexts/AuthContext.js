@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { authAPI } from '../services/api';
 
 export const AuthContext = createContext(null);
 
@@ -15,49 +16,69 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user is logged in on mount
-        const token = localStorage.getItem('token');
-        if (token) {
-            // For now, just set a basic user object
-            setUser({ id: 'test_user_1' }); // Using test user from the documentation
-        }
-        setLoading(false);
+        const verifyAuth = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setLoading(false);
+                    return;
+                }
+
+                const response = await authAPI.verifyToken();
+                setUser(response.data.user);
+            } catch (error) {
+                console.error('Auth verification failed:', error);
+                localStorage.removeItem('token');
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        verifyAuth();
     }, []);
 
     const login = async (credentials) => {
         try {
-            // Simulate API call for now
-            // Later we'll integrate with real backend
-            if (credentials.email && credentials.password) {
-                const user = { id: 'test_user_1' };
-                localStorage.setItem('token', 'dummy_token');
-                setUser(user);
-                return { success: true };
-            }
-            throw new Error('Invalid credentials');
+            const response = await authAPI.login(credentials);
+            const { token, user } = response.data;
+            localStorage.setItem('token', token);
+            setUser(user);
+            return { success: true };
         } catch (error) {
-            return { success: false, error: error.message };
+            console.error('Login failed:', error);
+            return { 
+                success: false, 
+                error: error.response?.data?.message || 'Login failed' 
+            };
         }
     };
 
     const register = async (userData) => {
         try {
-            // Simulate API call for now
-            if (userData.email && userData.password) {
-                const user = { id: 'test_user_1' };
-                localStorage.setItem('token', 'dummy_token');
-                setUser(user);
-                return { success: true };
-            }
-            throw new Error('Invalid user data');
+            const response = await authAPI.register(userData);
+            const { token, user } = response.data;
+            localStorage.setItem('token', token);
+            setUser(user);
+            return { success: true };
         } catch (error) {
-            return { success: false, error: error.message };
+            console.error('Registration failed:', error);
+            return { 
+                success: false, 
+                error: error.response?.data?.message || 'Registration failed' 
+            };
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        setUser(null);
+    const logout = async () => {
+        try {
+            await authAPI.logout();
+        } catch (error) {
+            console.error('Logout failed:', error);
+        } finally {
+            localStorage.removeItem('token');
+            setUser(null);
+        }
     };
 
     return (
@@ -66,7 +87,8 @@ export const AuthProvider = ({ children }) => {
             login, 
             register, 
             logout, 
-            loading 
+            loading,
+            isAuthenticated: !!user
         }}>
             {children}
         </AuthContext.Provider>
