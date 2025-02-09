@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { authAPI } from '../services/authAPI';
-import { setAuthToken, getAuthToken, clearAuth } from '../utils/auth';
+import { authAPI } from '../services/api';
+import { setAuthToken, getAuthToken, clearAuth, isAuthenticated } from '../utils/auth'; // Add isAuthenticated import
 
 const AuthContext = createContext(null);
 
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
                 setLoading(false);
                 return;
             }
-            const response = await authAPI.verify();
+            const response = await authAPI.verifyToken(); // Changed from verify to verifyToken
             setUser(response.data.user);
         } catch (error) {
             clearAuth();
@@ -41,13 +41,39 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        clearAuth();
-        setUser(null);
+    const register = async (userData) => {
+        try {
+            const response = await authAPI.register(userData);
+            const { token, user } = response.data;
+            setAuthToken(token);
+            setUser(user);
+            return user;
+        } catch (error) {
+            clearAuth();
+            throw error;
+        }
+    };
+
+    const logout = async () => {
+        try {
+            await authAPI.logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            clearAuth();
+            setUser(null);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            loading, 
+            login, 
+            logout,
+            register,
+            isAuthenticated: isAuthenticated()
+        }}>
             {children}
         </AuthContext.Provider>
     );
