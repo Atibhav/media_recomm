@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { authAPI } from '../../services/api';  // Update this import
 
 const RegisterForm = () => {
     const [formData, setFormData] = useState({
@@ -12,7 +12,6 @@ const RegisterForm = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { register } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,27 +23,19 @@ const RegisterForm = () => {
             return;
         }
 
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters long');
-            return;
-        }
-
-        if (formData.username && formData.username.length < 3) {
-            setError('Username must be at least 3 characters long');
-            return;
-        }
-
         setLoading(true);
 
         try {
-            const registrationData = {
+            const response = await authAPI.register({
                 email: formData.email,
                 password: formData.password,
-                username: formData.username || undefined // Only send if provided
-            };
+                username: formData.username || undefined
+            });
 
-            await register(registrationData);
-            navigate('/');
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                navigate('/');
+            }
         } catch (err) {
             console.error('Registration error:', err);
             setError(
