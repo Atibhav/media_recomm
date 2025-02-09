@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../../services/api';  // Update this import
+import { useAuth } from '../../hooks/useAuth';  // Update this import
 
 const RegisterForm = () => {
     const [formData, setFormData] = useState({
@@ -12,40 +12,37 @@ const RegisterForm = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { register } = useAuth();
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
+      e.preventDefault();
+      setError('');
 
-        // Validation
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
+      // Validation
+      if (formData.password !== formData.confirmPassword) {
+          setError('Passwords do not match');
+          return;
+      }
 
-        setLoading(true);
+      setLoading(true);
 
-        try {
-            const response = await authAPI.register({
-                email: formData.email,
-                password: formData.password,
-                username: formData.username || undefined
-            });
-
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                navigate('/');
-            }
-        } catch (err) {
-            console.error('Registration error:', err);
-            setError(
-                err.response?.data?.message || 
-                'Server error during registration. Please try again.'
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
+      try {
+          await register({  // Use register from useAuth hook
+              email: formData.email,
+              password: formData.password,
+              username: formData.username || undefined
+          });
+          navigate('/');
+      } catch (err) {
+          console.error('Registration error:', err);
+          setError(
+              err.response?.data?.message || 
+              'Server error during registration. Please try again.'
+          );
+      } finally {
+          setLoading(false);
+      }
+  };
 
     return (
         <div className="auth-form-container">
