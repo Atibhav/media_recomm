@@ -1,97 +1,129 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import useAuth from "../../hooks/useAuth"
-import { authAPI } from "../../services/api"
-import { setAuthToken } from "../../utils/auth"
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
-function RegisterForm() {
-  const navigate = useNavigate()
-  const { login } = useAuth()
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  })
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+const RegisterForm = () => {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        username: '' // Optional
+    });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const { register } = useAuth();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+        // Validation
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match")
-      setIsLoading(false)
-      return
-    }
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters long');
+            return;
+        }
 
-    try {
-      const response = await authAPI.register({
-        email: formData.email,
-        password: formData.password
-      });
+        if (formData.username && formData.username.length < 3) {
+            setError('Username must be at least 3 characters long');
+            return;
+        }
 
-      const { token } = response.data;
-      if (token) {
-        setAuthToken(token);
-        login(token);
-        navigate("/dashboard");
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
-    } finally {
-      setIsLoading(false)
-    }
-  }
+        setLoading(true);
 
-  return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <h2>Create an Account</h2>
-      {error && <div className="auth-error">{error}</div>}
-      <div className="form-group">
-        <label htmlFor="email">Email</label>
-        <input 
-          type="email" 
-          id="email" 
-          name="email" 
-          value={formData.email} 
-          onChange={handleChange} 
-          required 
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="confirmPassword">Confirm Password</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <button type="submit" className="auth-button">
-        Register
-      </button>
-    </form>
-  )
-}
+        try {
+            const registrationData = {
+                email: formData.email,
+                password: formData.password,
+                username: formData.username || undefined // Only send if provided
+            };
 
-export default RegisterForm
+            await register(registrationData);
+            navigate('/');
+        } catch (err) {
+            console.error('Registration error:', err);
+            setError(
+                err.response?.data?.message || 
+                'Server error during registration. Please try again.'
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="auth-form-container">
+            <form onSubmit={handleSubmit} className="auth-form">
+                <h2>Create Account</h2>
+                
+                {error && <div className="error-message">{error}</div>}
+                
+                <div className="form-group">
+                    <input
+                        type="text"
+                        value={formData.username}
+                        onChange={(e) => setFormData({
+                            ...formData,
+                            username: e.target.value
+                        })}
+                        placeholder="Username (optional)"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({
+                            ...formData,
+                            email: e.target.value
+                        })}
+                        placeholder="Email"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <input
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({
+                            ...formData,
+                            password: e.target.value
+                        })}
+                        placeholder="Password"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <input
+                        type="password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value
+                        })}
+                        placeholder="Confirm Password"
+                        required
+                    />
+                </div>
+
+                <button 
+                    type="submit" 
+                    className="auth-button"
+                    disabled={loading}
+                >
+                    {loading ? 'Creating Account...' : 'Sign Up'}
+                </button>
+            </form>
+        </div>
+    );
+};
+
+export default RegisterForm;

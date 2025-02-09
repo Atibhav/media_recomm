@@ -1,36 +1,62 @@
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import { useState, useEffect, createContext, useContext } from 'react';
+import { authAPI } from '../services/authAPI';
+import { setAuthToken, getAuthToken, clearAuth } from '../utils/auth';
+
+const AuthContext = createContext(null);
+
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        checkAuth();
+    }, []);
+
+    const checkAuth = async () => {
+        try {
+            const token = getAuthToken();
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+            const response = await authAPI.verify();
+            setUser(response.data.user);
+        } catch (error) {
+            clearAuth();
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const login = async (credentials) => {
+        try {
+            const response = await authAPI.login(credentials);
+            const { token, user } = response.data;
+            setAuthToken(token);
+            setUser(user);
+            return user;
+        } catch (error) {
+            clearAuth();
+            throw error;
+        }
+    };
+
+    const logout = () => {
+        clearAuth();
+        setUser(null);
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, loading, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
-
-    const { user, loading, login, logout } = context;
-
-    return {
-        isAuthenticated: !!user,
-        isLoading: loading,
-        user,
-        login: (token) => {
-            // Store token
-            localStorage.setItem('token', token);
-            
-            // Call the context's login method
-            login(token);
-        },
-        logout: () => {
-            // Clear token
-            localStorage.removeItem('token');
-            
-            // Call the context's logout method
-            logout();
-        },
-        // Spread other context methods
-        ...context
-    };
+    return context;
 };
-
-export default useAuth;

@@ -8,6 +8,9 @@ const authController = {
         try {
             const { email, password, username } = req.body;
 
+            // Debug log
+            console.log('Registration attempt:', { email, username });
+
             // Validate input
             if (!email || !password) {
                 return res.status(400).json({ 
@@ -16,42 +19,72 @@ const authController = {
                 });
             }
 
-            // Validate email format
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
+            // Username validation
+            const generatedUsername = username || email.split('@')[0];
+            if (generatedUsername.length < 3) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Please provide a valid email address'
+                    message: 'Username must be at least 3 characters long'
+                });
+            }
+
+            // Password validation
+            if (password.length < 6) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Password must be at least 6 characters long'
                 });
             }
 
             // Check if user already exists
-            const existingUser = await User.findOne({ email });
+            const existingUser = await User.findOne({ 
+                $or: [
+                    { email: email.toLowerCase() },
+                    { username: generatedUsername }
+                ]
+            });
+
             if (existingUser) {
                 return res.status(400).json({ 
                     success: false, 
-                    message: 'User already exists' 
+                    message: existingUser.email === email.toLowerCase() ? 
+                        'Email already exists' : 
+                        'Username already exists'
                 });
             }
-
-            // Generate username from email if not provided
-            const generatedUsername = username || email.split('@')[0];
 
             // Hash password
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
-            // Create new user
+            // Create new user with default preferences
             const newUser = new User({
                 username: generatedUsername,
-                email,
+                email: email.toLowerCase(),
                 password: hashedPassword,
                 authType: 'local',
-                preferences: { genres: [] }
+                preferences: {
+                    genres: [],
+                    watchlist: [],
+                    language: {
+                        primary: 'en',
+                        subtitle: 'en'
+                    },
+                    contentFilters: {
+                        maxRating: 'PG-13',
+                        excludedGenres: [],
+                        adultContent: false
+                    },
+                    genrePreferences: {
+                        liked: [],
+                        disliked: []
+                    }
+                }
             });
 
             // Save user to database
             const savedUser = await newUser.save();
+            console.log('User registered successfully:', savedUser._id);
 
             // Create JWT token
             const token = jwt.sign(
@@ -60,6 +93,7 @@ const authController = {
                 { expiresIn: '1d' }
             );
 
+            // Send response
             res.status(201).json({
                 success: true,
                 token,
@@ -70,8 +104,36 @@ const authController = {
                     preferences: savedUser.preferences
                 }
             });
+
         } catch (error) {
-            console.error('Registration error:', error);
+            // Detailed error logging
+            console.error('Registration error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name,
+                code: error.code
+            });
+
+            // Handle mongoose validation errors
+            if (error.name === 'ValidationError') {
+                return res.status(400).json({
+                    success: false,
+                    message: Object.values(error.errors)
+                        .map(err => err.message)
+                        .join(', ')
+                });
+            }
+
+            // Handle duplicate key errors
+            if (error.code === 11000) {
+                const field = Object.keys(error.keyPattern)[0];
+                return res.status(400).json({
+                    success: false,
+                    message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`
+                });
+            }
+
+            // Generic server error
             res.status(500).json({ 
                 success: false, 
                 message: 'Server error during registration',
