@@ -38,7 +38,9 @@ export const authAPI = {
     login: (credentials) => api.post('/api/auth/login', credentials),
     register: (userData) => api.post('/api/auth/register', userData),
     logout: () => api.post('/api/auth/logout'),
-    verifyToken: () => api.get('/api/auth/verify')
+    verifyToken: () => api.get('/api/auth/verify'),
+    googleLogin: () => window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/google`
+
 };
 
 export const movieAPI = {

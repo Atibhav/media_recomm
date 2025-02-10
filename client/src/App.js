@@ -21,6 +21,7 @@ import "./styles/search.css"
 import "./styles/movie-details.css"  
 import './styles/browse.css'
 import './styles/error.css'
+import './styles/auth-forms.css'
 
 function AppRoutes() {
   return (

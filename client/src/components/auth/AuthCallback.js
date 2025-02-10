@@ -9,16 +9,25 @@ function AuthCallback() {
     const { login } = useAuth();
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const token = params.get('token');
-        
-        if (token) {
-            setAuthToken(token);
-            login(token);
-            navigate('/dashboard');
-        } else {
-            navigate('/login');
-        }
+        const handleCallback = async () => {
+            try {
+                const params = new URLSearchParams(location.search);
+                const token = params.get('token');
+                
+                if (token) {
+                    setAuthToken(token);
+                    await login({ token }); // Pass token as an object to match login expectations
+                    navigate('/dashboard');
+                } else {
+                    throw new Error('No token received');
+                }
+            } catch (error) {
+                console.error('Auth callback error:', error);
+                navigate('/login');
+            }
+        };
+
+        handleCallback();
     }, [navigate, login, location]);
 
     return (
