@@ -7,7 +7,7 @@ import Dashboard from "./components/dashboard/Dashboard"
 import WatchlistPage from './components/watchlist/WatchlistPage'
 import SearchResults from './components/search/SearchResults'
 import MovieDetails from './components/movies/MovieDetails'  
-import { AuthProvider } from "./contexts/AuthContext"
+import { AuthProvider } from "./hooks/useAuth"
 import BrowsePage from './components/browse/BrowsePage'
 import UserProfile from './components/profile/UserProfile'
 import ErrorBoundary from './components/error/ErrorBoundary'
