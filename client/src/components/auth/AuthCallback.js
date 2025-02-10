@@ -11,12 +11,15 @@ function AuthCallback() {
     useEffect(() => {
         const handleCallback = async () => {
             try {
+                console.log('AuthCallback mounted, search params:', location.search);
                 const params = new URLSearchParams(location.search);
                 const token = params.get('token');
                 
+                console.log('Received token:', token ? 'yes' : 'no');
+                
                 if (token) {
                     setAuthToken(token);
-                    await login({ token }); // Pass token as an object to match login expectations
+                    await login({ token });
                     navigate('/dashboard');
                 } else {
                     throw new Error('No token received');
@@ -26,7 +29,7 @@ function AuthCallback() {
                 navigate('/login');
             }
         };
-
+    
         handleCallback();
     }, [navigate, login, location]);
 

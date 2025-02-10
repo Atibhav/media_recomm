@@ -18,25 +18,24 @@ router.get('/google', passport.authenticate('google', {
 
 router.get('/google/callback', 
     passport.authenticate('google', { 
-        failureRedirect: 'https://media-recomm-frontend.onrender.com/login',
+        failureRedirect: `${process.env.CLIENT_URL}/login`,
         session: false
     }),
     (req, res) => {
         try {
-            console.log('Google callback user:', req.user); // Debug log
+            console.log('Google callback user:', req.user);
+            console.log('Using CLIENT_URL:', process.env.CLIENT_URL); // Debug log
 
-            // Generate JWT
             const token = jwt.sign(
                 { id: req.user._id },
                 process.env.JWT_SECRET,
                 { expiresIn: '1d' }
             );
 
-            // Redirect to frontend with token
-            res.redirect(`https://media-recomm-frontend.onrender.com/auth-callback?token=${token}`);
+            res.redirect(`${process.env.CLIENT_URL}/auth-callback?token=${token}`);
         } catch (error) {
             console.error('Token generation error:', error);
-            res.redirect(`https://media-recomm-frontend.onrender.com/login?error=Authentication failed`);
+            res.redirect(`${process.env.CLIENT_URL}/login?error=Authentication failed`);
         }
     }
 );
