@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';  // Update this import
+import { useAuth } from '../../hooks/useAuth';
 
 const RegisterForm = () => {
     const [formData, setFormData] = useState({
