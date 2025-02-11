@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { setAuthToken } from '../../utils/auth';
 
 function AuthCallback() {
+    console.log('AuthCallback component rendered'); // debug log
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useAuth();
