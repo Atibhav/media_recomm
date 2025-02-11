@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build && echo \"/* /index.html 200\" > build/_redirects",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

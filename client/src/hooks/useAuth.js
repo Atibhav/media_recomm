@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { authAPI } from '../services/api';
-import { setAuthToken, getAuthToken, clearAuth, isAuthenticated } from '../utils/auth'; 
+import { setAuthToken, getAuthToken, clearAuth, isAuthenticated } from '../utils/auth';
 
 const AuthContext = createContext(null);
 
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
                 setLoading(false);
                 return;
             }
-            const response = await authAPI.verifyToken(); // Changed from verify to verifyToken
+            const response = await authAPI.verifyToken();
             setUser(response.data.user);
         } catch (error) {
             clearAuth();
@@ -30,12 +30,24 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (credentials) => {
         try {
+            // If we have a token (from OAuth), just verify and set the user
+            if (credentials.token) {
+                console.log('OAuth login with token');
+                setAuthToken(credentials.token);
+                const response = await authAPI.verifyToken();
+                setUser(response.data.user);
+                return response.data.user;
+            }
+            
+            // Regular email/password login
+            console.log('Regular login with credentials');
             const response = await authAPI.login(credentials);
             const { token, user } = response.data;
             setAuthToken(token);
             setUser(user);
             return user;
         } catch (error) {
+            console.error('Login error:', error);
             clearAuth();
             throw error;
         }
