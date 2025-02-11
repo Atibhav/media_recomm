@@ -26,10 +26,10 @@ import './styles/auth-forms.css'
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* Auth Routes - Keep these first and unprotected */}
+      <Route path="/auth-callback" element={<AuthCallback />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/register" element={<RegisterForm />} />
-      <Route path="/auth-callback" element={<AuthCallback />} />
       
       {/* Protected Routes */}
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

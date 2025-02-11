@@ -1,8 +1,3 @@
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { setAuthToken } from '../../utils/auth';
-
 function AuthCallback() {
     console.log('AuthCallback component rendered'); // debug log
     const navigate = useNavigate();
@@ -50,5 +45,3 @@ function AuthCallback() {
         </div>
     );
 }
-
-export default AuthCallback;
