@@ -16,7 +16,7 @@ const RegisterForm = () => {
 
     const handleSubmit = async (e) => {
         console.log('Form submission started'); // Debug log
-        e.preventDefault();
+        e.preventDefault(); 
         setError('');
 
         // Validation
@@ -33,7 +33,7 @@ const RegisterForm = () => {
                 username: formData.username
             });
             
-            await register({  // Use register from useAuth hook
+            await register({
                 email: formData.email,
                 password: formData.password,
                 username: formData.username || undefined
@@ -66,6 +66,7 @@ const RegisterForm = () => {
                 <div className="form-group">
                     <input
                         type="text"
+                        name="username"
                         value={formData.username}
                         onChange={(e) => setFormData({
                             ...formData,
@@ -78,6 +79,7 @@ const RegisterForm = () => {
                 <div className="form-group">
                     <input
                         type="email"
+                        name="email"
                         value={formData.email}
                         onChange={(e) => setFormData({
                             ...formData,
@@ -91,6 +93,7 @@ const RegisterForm = () => {
                 <div className="form-group">
                     <input
                         type="password"
+                        name="password"
                         value={formData.password}
                         onChange={(e) => setFormData({
                             ...formData,
@@ -104,6 +107,7 @@ const RegisterForm = () => {
                 <div className="form-group">
                     <input
                         type="password"
+                        name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={(e) => setFormData({
                             ...formData,

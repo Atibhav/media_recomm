@@ -46,4 +46,25 @@ router.post('/login', authController.login);
 router.get('/profile', auth, authController.getProfile);
 router.put('/preferences', auth, authController.updatePreferences);
 
+//verify token route
+router.get('/verify', auth, async (req, res) => {
+    console.log('Verify endpoint hit');
+    try {
+        console.log('User ID from token:', req.user.id);
+        const user = await User.findById(req.user.id).select('-password');
+        console.log('Found user:', user ? 'yes' : 'no');
+        
+        if (!user) {
+            console.log('User not found in database');
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        console.log('Sending user response');
+        res.json({ user });
+    } catch (error) {
+        console.error('Verify token error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;
