@@ -55,12 +55,26 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (userData) => {
         try {
+            console.log('Starting registration in useAuth with:', {
+                email: userData.email,
+                username: userData.username
+                // Don't log password
+            });
+            
             const response = await authAPI.register(userData);
+            console.log('Registration API response:', response);
+            
             const { token, user } = response.data;
+            console.log('Setting auth token and user');
             setAuthToken(token);
             setUser(user);
             return user;
         } catch (error) {
+            console.error('Registration error in useAuth:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
             clearAuth();
             throw error;
         }
