@@ -69,10 +69,10 @@ export const movieAPI = {
 };
 
 export const watchlistAPI = {
-    getWatchlist: () => api.get('/api/watchlist'),
-    addToWatchlist: (movieId) => api.post('/api/watchlist', { movieId }),
-    removeFromWatchlist: (movieId) => api.delete(`/api/watchlist/${movieId}`),
-    checkStatus: (movieId) => api.get(`/api/watchlist/check/${movieId}`)
+    getWatchlist: () => api.get('/api/movies/user/watchlist'),
+    addToWatchlist: (movieId) => api.post('/api/movies/user/watchlist', { movieId }),
+    removeFromWatchlist: (movieId) => api.delete(`/api/movies/user/watchlist/${movieId}`),
+    checkStatus: (movieId) => api.get(`/api/movies/user/watchlist/check/${movieId}`)
 };
 
 export const userAPI = {
