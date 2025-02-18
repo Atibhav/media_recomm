@@ -23,38 +23,38 @@ import './styles/browse.css'
 import './styles/error.css'
 import './styles/auth-forms.css'
 
-function AppRoutes() {
-  return (
-    <Routes>
-      {/* Auth Routes - Keep these first and unprotected */}
-      <Route path="/auth-callback" element={<AuthCallback />} />
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/register" element={<RegisterForm />} />
-      
-      {/* Protected Routes */}
-      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/watchlist" element={<ProtectedRoute><WatchlistPage /></ProtectedRoute>} />
-      <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
-      <Route path="/search/:query" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
-      <Route path="/movie/:movieId" element={<ProtectedRoute><MovieDetails /></ProtectedRoute>} />
-      <Route path="/browse" element={<ProtectedRoute><BrowsePage /></ProtectedRoute>} />
-      <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-      
-      {/* 404 Route */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-}
-
 function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
         <Router>
-          <Layout>
-            <AppRoutes />
-          </Layout>
+          <Routes>
+            {/* Auth callback route outside of Layout */}
+            <Route path="/auth-callback" element={<AuthCallback />} />
+            
+            {/* All other routes inside Layout */}
+            <Route path="/*" element={
+              <Layout>
+                <Routes>
+                  <Route path="/login" element={<LoginForm />} />
+                  <Route path="/register" element={<RegisterForm />} />
+                  
+                  {/* Protected Routes */}
+                  <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/watchlist" element={<ProtectedRoute><WatchlistPage /></ProtectedRoute>} />
+                  <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+                  <Route path="/search/:query" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+                  <Route path="/movie/:movieId" element={<ProtectedRoute><MovieDetails /></ProtectedRoute>} />
+                  <Route path="/browse" element={<ProtectedRoute><BrowsePage /></ProtectedRoute>} />
+                  <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+                  
+                  {/* 404 Route */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            } />
+          </Routes>
         </Router>
       </AuthProvider>
     </ErrorBoundary>
