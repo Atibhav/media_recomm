@@ -1,12 +1,15 @@
-import Navbar from "./Navbar"
+import { Outlet } from 'react-router-dom';
+import Navbar from "./Navbar";
 
-function Layout({ children }) {
+function Layout() {
   return (
     <div className="layout">
       <Navbar />
-      <main className="main-content">{children}</main>
+      <main className="main-content">
+        <Outlet />  {/* Replace {children} with <Outlet /> */}
+      </main>
     </div>
-  )
+  );
 }
 
-export default Layout
+export default Layout;

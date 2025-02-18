@@ -35,21 +35,19 @@ function App() {
             <Route path="/register" element={<RegisterForm />} />
             
             {/* All other routes inside Layout */}
-            <Route path="/" element={<Layout>
-              <Routes>
-                <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/watchlist" element={<ProtectedRoute><WatchlistPage /></ProtectedRoute>} />
-                <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
-                <Route path="/search/:query" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
-                <Route path="/movie/:movieId" element={<ProtectedRoute><MovieDetails /></ProtectedRoute>} />
-                <Route path="/browse" element={<ProtectedRoute><BrowsePage /></ProtectedRoute>} />
-                <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-                
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>} />
+            <Route element={<Layout />}>  {/* Changed to use outlet */}
+              <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/watchlist" element={<ProtectedRoute><WatchlistPage /></ProtectedRoute>} />
+              <Route path="/search" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+              <Route path="/search/:query" element={<ProtectedRoute><SearchResults /></ProtectedRoute>} />
+              <Route path="/movie/:movieId" element={<ProtectedRoute><MovieDetails /></ProtectedRoute>} />
+              <Route path="/browse" element={<ProtectedRoute><BrowsePage /></ProtectedRoute>} />
+              <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+              
+              {/* 404 Route */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
           </Routes>
         </Router>
       </AuthProvider>
