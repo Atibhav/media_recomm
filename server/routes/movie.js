@@ -77,6 +77,35 @@ router.get('/recommended/:userId', auth, async (req, res) => {
     }
 });
 
+//get genres
+router.get('/genres', async (req, res) => {
+    try {
+        const genres = await tmdbService.getGenres();
+        res.json(genres);
+    } catch (error) {
+        console.error('Genres fetch error:', error);
+        res.status(500).json({ 
+            error: 'Failed to fetch genres', 
+            details: error.message 
+        });
+    }
+});
+
+// Browse movies with filters
+router.get('/browse', async (req, res) => {
+    try {
+        const { genre, sortBy, year } = req.query;
+        const movies = await tmdbService.browseMovies({ genre, sortBy, year });
+        res.json(movies);
+    } catch (error) {
+        console.error('Browse movies error:', error);
+        res.status(500).json({ 
+            error: 'Failed to browse movies', 
+            details: error.message 
+        });
+    }
+});
+
 // Database routes
 router.get('/', movieController.getAllMovies);
 router.get('/:id', movieController.getMovieById);

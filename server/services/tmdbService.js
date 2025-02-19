@@ -100,6 +100,59 @@ const tmdbService = {
             console.error('TMDB API Error:', error.response?.data || error.message);
             throw new Error('Failed to fetch trending movies');
         }
+    },
+
+    getGenres: async () => {
+        try {
+            const url = `${BASE_URL}/genre/movie/list?api_key=${TMDB_API_KEY}`;
+            const response = await axios.get(url);
+            
+            return response.data.genres;
+        } catch (error) {
+            console.error('TMDB API Error:', error.response?.data || error.message);
+            throw new Error('Failed to fetch genres');
+        }
+    },
+
+    browseMovies: async ({ genre, sortBy, year }) => {
+        try {
+            let url = `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}`;
+            
+            // Add filters if provided
+            if (genre) url += `&with_genres=${genre}`;
+            if (year) url += `&year=${year}`;
+            
+            // Handle different sort options
+            switch (sortBy) {
+                case 'popularity':
+                    url += '&sort_by=popularity.desc';
+                    break;
+                case 'rating':
+                    url += '&sort_by=vote_average.desc';
+                    break;
+                case 'release_date':
+                    url += '&sort_by=release_date.desc';
+                    break;
+                default:
+                    url += '&sort_by=popularity.desc';
+            }
+
+            const response = await axios.get(url);
+            
+            return response.data.results.map(movie => ({
+                id: movie.id,
+                title: movie.title,
+                overview: movie.overview,
+                posterPath: movie.poster_path,
+                backdropPath: movie.backdrop_path,
+                releaseDate: movie.release_date,
+                voteAverage: movie.vote_average,
+                genres: movie.genre_ids
+            }));
+        } catch (error) {
+            console.error('TMDB API Error:', error.response?.data || error.message);
+            throw new Error('Failed to browse movies');
+        }
     }
 };
 

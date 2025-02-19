@@ -65,7 +65,9 @@ export const movieAPI = {
     search: (query) => api.get('/api/movies/search', { params: { query }}),
     getTrending: () => api.get('/api/movies/trending'),
     getById: (id) => api.get(`/api/movies/${id}/details`),
-    getRecommended: (userId) => api.get(`/api/movies/recommended/${userId}`)
+    getRecommended: (userId) => api.get(`/api/movies/recommended/${userId}`),
+    browse: (params) => api.get('/api/movies/browse', { params }),
+    getGenres: () => api.get('/api/movies/genres')
 };
 
 export const watchlistAPI = {

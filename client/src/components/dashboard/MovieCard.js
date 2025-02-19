@@ -8,6 +8,11 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
   const [notification, setNotification] = useState(null);
   const { user } = useAuth();
 
+  // Construct the proper poster URL
+  const posterUrl = movie.posterPath
+    ? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
+    : "https://via.placeholder.com/500x750?text=No+Poster"; // Using a placeholder service instead of local file
+
   const handleWatchlistAction = async () => {
     setIsLoading(true);
     try {
@@ -18,7 +23,7 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
           message: 'Removed from watchlist'
         });
       } else {
-        await watchlistAPI.addToWatchlist(user.id, movie.id);
+        await watchlistAPI.addToWatchlist(user.id, movie._id); // Changed movie.id to movie._id
         setNotification({
           type: 'success',
           message: 'Added to watchlist!'
@@ -43,16 +48,20 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <img 
-        src={movie.poster_path || "/placeholder.svg"} 
+        src={posterUrl}
         alt={movie.title} 
-        className="movie-poster" 
+        className="movie-poster"
+        onError={(e) => {
+          e.target.onerror = null; // Prevent infinite loop
+          e.target.src = "https://via.placeholder.com/500x750?text=No+Poster";
+        }}
       />
       <div className="movie-info">
         <h3 className="movie-title">{movie.title}</h3>
         <div className="movie-meta">
-          <span className="movie-rating">★ {movie.vote_average.toFixed(1)}</span>
+          <span className="movie-rating">★ {movie.voteAverage?.toFixed(1) || 'N/A'}</span>
           <span className="movie-year">
-            {new Date(movie.release_date).getFullYear()}
+            {movie.releaseDate ? new Date(movie.releaseDate).getFullYear() : 'N/A'}
           </span>
         </div>
       </div>
@@ -62,7 +71,7 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
           <h3 className="movie-title">{movie.title}</h3>
           <p className="movie-overview">{movie.overview}</p>
           <div className="movie-genres">
-            {movie.genres.map(genre => (
+            {movie.genres?.map(genre => (
               <span key={genre} className="genre-tag">{genre}</span>
             ))}
           </div>
