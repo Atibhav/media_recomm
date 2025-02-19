@@ -112,13 +112,39 @@
     padding: 1rem;
     z-index: 1000;
   }
+
+  .no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+  }
+  
+  .filter-group select:hover {
+    border-color: var(--accent);
+  }
+
+  .filter-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-transparent);
+  }
   
   @media (max-width: 768px) {
+    .browse-page {
+      padding: 1rem;
+    }
+    
     .filters {
       flex-direction: column;
     }
-  
+    
     .filter-group {
       width: 100%;
+    }
+    
+    .results-info {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
     }
   }
