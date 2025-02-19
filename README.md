@@ -73,7 +73,7 @@ GET /api/movies/user/watchlist
 - View user's watchlist
 - Requires authentication
 
-## Dataabse Models
+## Database Models
 
 ### User Model
 - username
