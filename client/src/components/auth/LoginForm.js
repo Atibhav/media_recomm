@@ -92,7 +92,7 @@ const LoginForm = () => {
                         width: '18px', 
                         height: '18px',
                         marginRight: '10px',
-                        verticalAlign: 'middle'  // This helps center the icon vertically
+                        verticalAlign: 'middle'  
                     }}/>
                     Sign in with Google
                 </button>

@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
+const axios = require('axios');
 require('./config/passport');
 const watchlistRoutes = require('./routes/watchlist');
 
