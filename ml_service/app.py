@@ -5,6 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from bson import ObjectId
 import json
+from datetime import datetime
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
@@ -16,11 +17,13 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Custom JSON encoder for MongoDB ObjectId
+# Custom JSON encoder for MongoDB ObjectId and datetime
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)
+        if isinstance(o, datetime):
+            return o.isoformat()
         return json.JSONEncoder.default(self, o)
 
 app.json_encoder = JSONEncoder
