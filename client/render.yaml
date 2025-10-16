@@ -6,8 +6,5 @@ services:
     staticPublishPath: ./build
     routes:
       - type: rewrite
-        source: "!/assets/*"
-        destination: /index.html
-      - type: rewrite
-        source: "!/static/*"
+        source: "/*"
         destination: /index.html
