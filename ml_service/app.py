@@ -3,6 +3,8 @@ import sys
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
+from bson import ObjectId
+import json
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
@@ -13,6 +15,15 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+# Custom JSON encoder for MongoDB ObjectId
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+app.json_encoder = JSONEncoder
 
 recommender = MovieRecommender()
 
