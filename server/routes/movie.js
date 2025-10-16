@@ -64,18 +64,7 @@ router.get('/:id/details', async (req, res) => {
 });
 
 // Protected routes
-router.get('/recommended/:userId', auth, async (req, res) => {
-    try {
-        const movies = await tmdbService.getRecommendedMovies(req.params.userId);
-        res.json(movies);
-    } catch (error) {
-        console.error('Recommended movies error:', error);
-        res.status(500).json({ 
-            error: 'Failed to fetch recommended movies',
-            details: error.message 
-        });
-    }
-});
+// Note: /recommended/:userId route moved to server.js as ML service proxy
 
 //get genres
 router.get('/genres', async (req, res) => {

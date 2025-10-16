@@ -63,6 +63,7 @@ app.use(passport.session());
 const authRoutes = require('./routes/auth');
 const movieRoutes = require('./routes/movie');
 const userRoutes = require('./routes/user');
+const auth = require('./middleware/auth');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -77,7 +78,7 @@ app.get('/api/test', (req, res) => {
 
 
 //ML_service route to proxy ML service requests
-app.get('/api/movies/recommended/:userId', async (req, res) => {
+app.get('/api/movies/recommended/:userId', auth, async (req, res) => {
     try {
         const { userId } = req.params;
         const response = await axios.get(
