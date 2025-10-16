@@ -8,9 +8,6 @@ const authController = {
         try {
             const { email, password, username } = req.body;
 
-            // Debug log
-            console.log('Registration attempt:', { email, username });
-
             // Validate input
             if (!email || !password) {
                 return res.status(400).json({ 
@@ -106,13 +103,7 @@ const authController = {
             });
 
         } catch (error) {
-            // Detailed error logging
-            console.error('Registration error details:', {
-                message: error.message,
-                stack: error.stack,
-                name: error.name,
-                code: error.code
-            });
+            console.error('Registration error:', error.message);
 
             // Handle mongoose validation errors
             if (error.name === 'ValidationError') {

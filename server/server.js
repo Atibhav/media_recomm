@@ -12,22 +12,14 @@ const watchlistRoutes = require('./routes/watchlist');
 
 const app = express();
 
-// Debug logging
-console.log('Setting up CORS with origins:', [
-    'https://media-recomm-frontend.onrender.com',
-    'http://localhost:3000'
-]);
-
-// Updated CORS configuration for development
+// CORS configuration
 app.use(cors({
     origin: function(origin, callback) {
         const allowedOrigins = [
             'https://media-recomm-frontend.onrender.com',
             'http://localhost:3000'
         ];
-        console.log('Request origin:', origin);
         
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         
         if (allowedOrigins.indexOf(origin) === -1) {

@@ -3,3 +3,12 @@ __pycache__/
 *.pyc
 .env
 node_modules/
+
+# Personal documentation files
+PROJECT_JOURNEY.md
+MERN_LEARNING_GUIDE.md
+MERN_COMPLETE_BEGINNER_GUIDE.md
+TECH_STACK_CLARIFICATION.md
+RESUME_SUMMARY.md
+DEPLOYMENT_STATUS.md
+FINAL_STATUS_REPORT.md

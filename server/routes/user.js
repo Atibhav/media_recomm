@@ -2,11 +2,7 @@ const router = require('express').Router();
 const userController = require('../controllers/userController');
 const auth = require('../middleware/auth');
 
-console.log('Setting up user routes'); // Debug log
-
-// Test route without auth middleware
 router.get('/test', (req, res) => {
-    console.log('Test route hit'); // Debug log
     res.json({ message: 'User routes working' });
 });
 

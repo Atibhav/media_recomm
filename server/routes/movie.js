@@ -64,9 +64,8 @@ router.get('/:id/details', async (req, res) => {
 });
 
 // Protected routes
-// Note: /recommended/:userId route moved to server.js as ML service proxy
 
-//get genres
+// Get genres
 router.get('/genres', async (req, res) => {
     try {
         const genres = await tmdbService.getGenres();

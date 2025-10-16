@@ -15,7 +15,6 @@ const RegisterForm = () => {
     const { register } = useAuth();
 
     const handleSubmit = async (e) => {
-        console.log('Form submission started'); // Debug log
         e.preventDefault(); 
         setError('');
 

@@ -23,9 +23,6 @@ router.get('/google/callback',
     }),
     (req, res) => {
         try {
-            console.log('Google callback user:', req.user);
-            console.log('Using CLIENT_URL:', process.env.CLIENT_URL); // Debug log
-
             const token = jwt.sign(
                 { id: req.user._id },
                 process.env.JWT_SECRET,
