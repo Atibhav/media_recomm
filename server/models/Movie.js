@@ -75,6 +75,12 @@ movieSchema.pre('save', function(next) {
     next();
 });
 
+//indexing for better lookups and hence better performance (O(N)) -> O(logN)
+// Note: tmdbId already has index from unique:true constraint
+movieSchema.index({ 'ratings.user': 1});  // Find movies user has rated
+movieSchema.index({ watchedBy: 1});       // Check watchlist membership
+movieSchema.index({ genres: 1});          // Filter by genre
+
 const Movie = mongoose.model('Movie', movieSchema);
 
 module.exports = Movie;

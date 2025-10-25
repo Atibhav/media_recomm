@@ -80,4 +80,9 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
+//indexing for better lookups and hence better performance (O(N)) -> O(logN)
+
+// Note: email and googleId already have indexes from unique:true constraint
+userSchema.index({ username: 1});  // Only username needs explicit index
+
 module.exports = mongoose.model('User', userSchema);
