@@ -19,7 +19,8 @@ function WatchlistPage() {
         try {
             setLoading(true);
             const response = await watchlistAPI.getWatchlist();
-            setWatchlist(response.data);
+            // changed to match backend response (array->object)
+            setWatchlist(response.data.watchlist || []);
         } catch (error) {
             console.error('Failed to fetch watchlist:', error);
             setError('Failed to load watchlist');

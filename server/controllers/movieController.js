@@ -132,15 +132,17 @@ const movieController = {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-        
+
             const watchlistWithTmdbIds = user.preferences.watchlist.map(item => ({
+                id: item.tmdbId,           
                 tmdbId: item.tmdbId,
                 addedAt: item.addedAt
             }));
 
             res.json({ 
                 success: true,
-                watchlist: watchlistWithTmdbIds
+                watchlist: watchlistWithTmdbIds,
+                count: watchlistWithTmdbIds.length
             });
         } catch (error) {
             res.status(500).json({ message: error.message });
@@ -151,7 +153,7 @@ const movieController = {
     getMovieRatings: async (req, res) => {
         try {
             const movie = await Movie.findById(req.params.id)
-                .populate('ratings.user', 'username');  // Get username of raters
+                .populate('ratings.user', 'username');  
     
             if (!movie) {
                 return res.status(404).json({ message: 'Movie not found' });
