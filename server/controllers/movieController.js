@@ -66,29 +66,33 @@ const movieController = {
     // Watchlist functions 
     addToWatchlist: async (req, res) => {
         try {
-            const movieId = req.params.id;
+            const tmdbId = req.params.id;  
             const userId = req.user.id;
 
-            const movie = await Movie.findById(movieId);
-            if (!movie) {
-                return res.status(404).json({ message: 'Movie not found' });
+            // Find user and check if movie already in watchlist
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
             }
 
-            // Check if movie is already in watchlist
-            if (movie.watchedBy.includes(userId)) {
+            // Check if movie already in watchlist
+            const alreadyInWatchlist = user.preferences.watchlist.some(
+                item => item.tmdbId === tmdbId
+            );
+
+            if (alreadyInWatchlist) {
                 return res.status(400).json({ message: 'Movie already in watchlist' });
             }
 
-            // Add user to movie's watchedBy array
-            movie.watchedBy.push(userId);
-            await movie.save();
-
             // Add movie to user's watchlist
-            await User.findByIdAndUpdate(userId, {
-                $addToSet: { 'preferences.watchlist': movieId }
-            });
+            user.preferences.watchlist.push({ tmdbId });
+            await user.save();
 
-            res.json({ message: 'Added to watchlist', movie });
+            res.json({ 
+                success: true,
+                message: 'Added to watchlist',
+                watchlist: user.preferences.watchlist
+            });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }    
@@ -96,24 +100,25 @@ const movieController = {
 
     removeFromWatchlist: async (req, res) => {
         try {
-            const movieId = req.params.id;
+            const tmdbId = req.params.id;  
             const userId = req.user.id;
 
-            const movie = await Movie.findById(movieId);
-            if (!movie) {
-                return res.status(404).json({ message: 'Movie not found' });
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
             }
 
-            // Remove user from movie's watchedBy array
-            movie.watchedBy = movie.watchedBy.filter(id => id.toString() !== userId);
-            await movie.save();
+            // Remove movie from watchlist
+            user.preferences.watchlist = user.preferences.watchlist.filter(
+                item => item.tmdbId !== tmdbId
+            );
+            await user.save();
 
-            // Remove movie from user's watchlist
-            await User.findByIdAndUpdate(userId, {
-                $pull: { 'preferences.watchlist': movieId }
+            res.json({ 
+                success: true,
+                message: 'Removed from watchlist',
+                watchlist: user.preferences.watchlist
             });
-
-            res.json({ message: 'Removed from watchlist', movie });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }    
@@ -121,14 +126,22 @@ const movieController = {
 
     getWatchlist: async (req, res) => {
         try {
-            const user = await User.findById(req.user.id)
-                .populate('preferences.watchlist');
+            const user = await User.findById(req.user.id);
             
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            res.json(user.preferences.watchlist);
+        
+            const watchlistWithTmdbIds = user.preferences.watchlist.map(item => ({
+                tmdbId: item.tmdbId,
+                addedAt: item.addedAt
+            }));
+
+            res.json({ 
+                success: true,
+                watchlist: watchlistWithTmdbIds
+            });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }

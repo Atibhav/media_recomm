@@ -35,8 +35,8 @@ const userSchema = new mongoose.Schema({
             type: String
         }],
         watchlist: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Movie'
+            tmdbId: { type: String, required: true },  
+            addedAt: { type: Date, default: Date.now }
         }],
         language: {
             primary: {
