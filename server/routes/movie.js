@@ -109,5 +109,6 @@ router.delete('/:id/rate', auth, movieController.deleteRating);
 router.post('/:id/watchlist', auth, movieController.addToWatchlist);
 router.delete('/:id/watchlist', auth, movieController.removeFromWatchlist);
 router.get('/user/watchlist', auth, movieController.getWatchlist);
+router.delete('/user/watchlist', auth, movieController.clearWatchlist);
 
 module.exports = router;

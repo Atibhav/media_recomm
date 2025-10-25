@@ -132,7 +132,7 @@ const movieController = {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-
+ 
             const watchlistWithTmdbIds = user.preferences.watchlist.map(item => ({
                 id: item.tmdbId,           
                 tmdbId: item.tmdbId,
@@ -143,6 +143,29 @@ const movieController = {
                 success: true,
                 watchlist: watchlistWithTmdbIds,
                 count: watchlistWithTmdbIds.length
+            });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+
+    // Clear entire watchlist (useful for testing/user preference)
+    clearWatchlist: async (req, res) => {
+        try {
+            const userId = req.user.id;
+            const user = await User.findById(userId);
+            
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            user.preferences.watchlist = [];
+            await user.save();
+
+            res.json({ 
+                success: true,
+                message: 'Watchlist cleared successfully',
+                watchlist: []
             });
         } catch (error) {
             res.status(500).json({ message: error.message });
