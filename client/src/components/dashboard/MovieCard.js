@@ -90,43 +90,5 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
     </div>
   );
 }
-        <h3 className="movie-title">{movie.title}</h3>
-        <div className="movie-meta">
-          <span className="movie-rating">★ {movie.voteAverage?.toFixed(1) || 'N/A'}</span>
-          <span className="movie-year">
-            {movie.releaseDate ? new Date(movie.releaseDate).getFullYear() : 'N/A'}
-          </span>
-        </div>
-      </div>
-      
-      {isHovered && (
-        <div className="movie-overlay">
-          <h3 className="movie-title">{movie.title}</h3>
-          <p className="movie-overview">{movie.overview}</p>
-          <div className="movie-genres">
-            {movie.genres?.map(genre => (
-              <span key={genre} className="genre-tag">{genre}</span>
-            ))}
-          </div>
-          <div className="movie-actions">
-            <button 
-              className={`watchlist-btn ${isLoading ? 'loading' : ''}`}
-              onClick={handleWatchlistAction}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Processing...' : 
-                isWatchlist ? '- Remove from Watchlist' : '+ Add to Watchlist'}
-            </button>
-          </div>
-          {notification && (
-            <div className={`notification ${notification.type}`}>
-              {notification.message}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default MovieCard;
