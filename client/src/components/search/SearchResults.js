@@ -27,19 +27,9 @@ function SearchResults() {
 
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/movies/search?q=${encodeURIComponent(query)}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-          }
-        );
-
-        if (!response.ok) throw new Error('Search failed');
-        
-        const data = await response.json();
-        setMovies(data);
+        // Use the centralized API service which handles token and correct parameter name 'query'
+        const response = await movieAPI.search(query);
+        setMovies(response.data);
       } catch (err) {
         setError('Failed to search movies');
         console.error('Error:', err);

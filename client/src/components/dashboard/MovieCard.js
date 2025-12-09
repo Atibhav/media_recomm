@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { watchlistAPI } from '../../services/api';
 
@@ -48,16 +49,47 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img 
-        src={posterUrl}
-        alt={movie.title} 
-        className="movie-poster"
-        onError={(e) => {
-          e.target.onerror = null; // Prevent infinite loop
-          e.target.src = "https://via.placeholder.com/500x750?text=No+Poster";
+      <Link to={`/movie/${movie.id}`} className="movie-card-link">
+        <img 
+          src={posterUrl}
+          alt={movie.title} 
+          className="movie-poster"
+          onError={(e) => {
+            e.target.onerror = null; // Prevent infinite loop
+            e.target.src = "https://via.placeholder.com/500x750?text=No+Poster";
+          }}
+        />
+        <div className="movie-info">
+          <h3>{movie.title}</h3>
+          <div className="movie-meta">
+            <span className="rating">★ {movie.voteAverage?.toFixed(1)}</span>
+            <span className="year">{new Date(movie.releaseDate).getFullYear()}</span>
+          </div>
+        </div>
+      </Link>
+
+      {/* Watchlist Button Overlay */}
+      <button 
+        className={`watchlist-btn ${isWatchlist ? 'remove' : 'add'} ${isLoading ? 'loading' : ''}`}
+        onClick={(e) => {
+          e.preventDefault(); // Prevent navigation when clicking the button
+          e.stopPropagation();
+          handleWatchlistAction();
         }}
-      />
-      <div className="movie-info">
+        disabled={isLoading}
+        title={isWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+      >
+        {isLoading ? '...' : (isWatchlist ? '−' : '+')}
+      </button>
+
+      {notification && (
+        <div className={`notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+    </div>
+  );
+}
         <h3 className="movie-title">{movie.title}</h3>
         <div className="movie-meta">
           <span className="movie-rating">★ {movie.voteAverage?.toFixed(1) || 'N/A'}</span>

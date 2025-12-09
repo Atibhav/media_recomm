@@ -120,7 +120,7 @@ const tmdbService = {
             
             // Add filters if provided
             if (genre) url += `&with_genres=${genre}`;
-            if (year) url += `&year=${year}`;
+            if (year) url += `&primary_release_year=${year}`;
             
             // Handle different sort options
             switch (sortBy) {
