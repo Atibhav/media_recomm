@@ -32,12 +32,10 @@ const movieController = {
                 return res.status(404).json({ message: 'Movie not found' });
             }
     
-            // Validate rating
             if (!rating || rating < 1 || rating > 5) {
                 return res.status(400).json({ message: 'Rating must be between 1 and 5' });
             }
     
-            // Check if user has already rated
             const existingRating = movie.ratings.find(
                 r => r.user.toString() === req.user.id
             );
@@ -149,7 +147,7 @@ const movieController = {
         }
     },
 
-    // Clear entire watchlist (useful for testing/user preference)
+    
     clearWatchlist: async (req, res) => {
         try {
             const userId = req.user.id;

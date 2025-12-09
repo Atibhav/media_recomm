@@ -8,7 +8,6 @@ const api = axios.create({
     withCredentials: true
 });
 
-// Add auth token to requests
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -23,7 +22,6 @@ api.interceptors.request.use(
     }
 );
 
-// Handle auth errors
 api.interceptors.response.use(
     (response) => {
         return response;
@@ -58,10 +56,10 @@ export const movieAPI = {
 };
 
 export const watchlistAPI = {
-    getWatchlist: () => api.get('/api/movies/user/watchlist'),
-    addToWatchlist: (movieId) => api.post('/api/movies/user/watchlist', { movieId }),
-    removeFromWatchlist: (movieId) => api.delete(`/api/movies/user/watchlist/${movieId}`),
-    checkStatus: (movieId) => api.get(`/api/movies/user/watchlist/check/${movieId}`)
+    getWatchlist: () => api.get('/api/watchlist'),
+    addToWatchlist: (movieId) => api.post('/api/watchlist', { movieId }),
+    removeFromWatchlist: (movieId) => api.delete(`/api/watchlist/${movieId}`),
+    checkStatus: (movieId) => api.get(`/api/watchlist/check/${movieId}`)
 };
 
 export const userAPI = {

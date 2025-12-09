@@ -15,9 +15,9 @@ from models.recommender import MovieRecommender
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+allowed_origins = os.getenv('ALLOWED_ORIGINS', '*').split(',')
+CORS(app, origins=allowed_origins)
 
-# Custom JSON encoder for MongoDB ObjectId and datetime
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, ObjectId):

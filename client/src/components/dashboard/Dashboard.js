@@ -33,8 +33,17 @@ function Dashboard() {
       }
     };
 
-    if (user?.id) {
+    // Fetch movies if user is authenticated OR if we want to show public content
+    // For now, we assume dashboard is protected, so we wait for user
+    if (user) {
       fetchMovies();
+    } else {
+        // If user is null but we are on dashboard, it might be loading auth
+        // We should wait for auth loading to finish
+        // But if auth is done and user is null, we should probably redirect (handled by ProtectedRoute)
+        // For now, let's just stop loading if we have no user to prevent infinite shimmer
+        const token = localStorage.getItem('token');
+        if (!token) setIsLoading(false);
     }
   }, [user]);
 

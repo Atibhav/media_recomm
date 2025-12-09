@@ -23,7 +23,8 @@ function MovieCard({ movie, onRemove, isWatchlist = false }) {
           message: 'Removed from watchlist'
         });
       } else {
-        await watchlistAPI.addToWatchlist(user.id, movie._id); // Changed movie.id to movie._id
+        // Pass only the movie ID (TMDB ID)
+        await watchlistAPI.addToWatchlist(movie.id); 
         setNotification({
           type: 'success',
           message: 'Added to watchlist!'

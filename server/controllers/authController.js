@@ -3,12 +3,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const authController = {
-    // Register new user
     register: async (req, res) => {
         try {
             const { email, password, username } = req.body;
 
-            // Validate input
             if (!email || !password) {
                 return res.status(400).json({ 
                     success: false, 
@@ -16,7 +14,6 @@ const authController = {
                 });
             }
 
-            // Username validation
             const generatedUsername = username || email.split('@')[0];
             if (generatedUsername.length < 3) {
                 return res.status(400).json({
@@ -25,7 +22,6 @@ const authController = {
                 });
             }
 
-            // Password validation
             if (password.length < 6) {
                 return res.status(400).json({
                     success: false,
@@ -33,7 +29,6 @@ const authController = {
                 });
             }
 
-            // Check if user already exists
             const existingUser = await User.findOne({ 
                 $or: [
                     { email: email.toLowerCase() },

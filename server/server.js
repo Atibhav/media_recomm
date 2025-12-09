@@ -12,13 +12,13 @@ const watchlistRoutes = require('./routes/watchlist');
 
 const app = express();
 
-// CORS configuration
 app.use(cors({
     origin: function(origin, callback) {
         const allowedOrigins = [
-            'https://media-recomm-frontend.onrender.com',
+            process.env.FRONTEND_URL,
+            process.env.CLIENT_URL,
             'http://localhost:3000'
-        ];
+        ].filter(Boolean);
         
         if (!origin) return callback(null, true);
         
@@ -36,7 +36,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your_session_secret',
     resave: false,
@@ -47,29 +46,28 @@ app.use(session({
     }
 }));
 
-// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Routes
 const authRoutes = require('./routes/auth');
 const movieRoutes = require('./routes/movie');
 const userRoutes = require('./routes/user');
 const auth = require('./middleware/auth');
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/movies', movieRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 
-// Test route
 app.get('/api/test', (req, res) => {
-    res.json({ message: 'API is working' });
+    const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+    res.json({ 
+        message: 'API is working',
+        dbStatus: dbStatus,
+        timestamp: new Date().toISOString()
+    });
 });
 
-
-//ML_service route to proxy ML service requests
 app.get('/api/movies/recommended/:userId', auth, async (req, res) => {
     try {
         const { userId } = req.params;
@@ -87,12 +85,10 @@ app.get('/api/movies/recommended/:userId', auth, async (req, res) => {
     }
 });
 
-// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ 
